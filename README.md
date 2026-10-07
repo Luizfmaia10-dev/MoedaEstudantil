@@ -81,10 +81,9 @@ O sistema tem o objetivo de estimular o reconhecimento do mérito estudantil atr
 ## 3. Modelagem e Diagramas UML
 
 Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de especificação e modelagem para o projeto:
-* **Diagrama de Casos de Uso**
-* **Histórias do Usuário**
-* **Diagrama de Classes**
-* **Diagrama de Componentes**
+* Veja o [**diagrama de casos de uso**](Artefatos/diagrama-casos-de-uso.pdf)
+* Veja o [**diagrama de classes**](Artefatos/diagrama-classes-v2.pdf)
+* Veja o [**diagrama de componentes**](Artefatos/diagrama-componentes.pdf)
 * **Modelo ER**
 
 ---
