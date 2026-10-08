@@ -18,8 +18,9 @@ O sistema tem o objetivo de estimular o reconhecimento do mérito estudantil atr
 - **RF-008:** A empresa parceira gerencia vantagens que deseja oferecer, bem como o custo em moedas estudantis.
 - **RF-009:** O sistema envia um email  com cupom ao aluno quando ele resgata uma vantagem.
 - **RF-010:** O sistema envia um email quando há uma troca à empresa parceira.
-- **RF-11:** O professor cadastra critérios de trasnferencia.
+- **RF-11:** O professor cadastra critérios de transferência.
 - **RF-12:** O aluno O aluno solicita transferência de moeda para outro aluno.
+- **RF-13:** O professor avalia solicitações de transferência.
 
 ### 1.2 Requisitos não funcionais (RNF):
 - **RNF-001:** O sistema deve ser desenvolvido utilizando a arquitetura MVC.
