@@ -8,19 +8,19 @@ O sistema tem o objetivo de estimular o reconhecimento do mérito estudantil atr
 ## 1. Requisitos do sistema
 
 ### 1.1 Requisitos funcionais (RF):
-- **RF-001:** O usuário autentica no sistema
-- **RF-002:** O aluno seleciona uma instituição participante a partir de uma lista de opções. 
-- **RF-003:** O sistema adiciona ao saldo corrente do professor 1000 (mil) moedas a cada semestre.
-- **RF-004:** O professor distribui moedas aos alunos, indicando o motivo da transferência.
-- **RF-005:** O sistema notifica ao aluno que ele recebeu moeda(s) de um professor.
-- **RF-006:** O usuário consulta o extrato da sua conta.
-- **RF-007:** O aluno troca moedas por uma vantagem.
-- **RF-008:** A empresa parceira gerencia vantagens que deseja oferecer, bem como o custo em moedas estudantis.
-- **RF-009:** O sistema envia um email  com cupom ao aluno quando ele resgata uma vantagem.
-- **RF-010:** O sistema envia um email quando há uma troca à empresa parceira.
-- **RF-011:** O professor cadastra critérios de transferência.
-- **RF-012:** O aluno solicita transferência de moeda para outro aluno.
-- **RF-013:** O professor avalia solicitações de transferência.
+- **RF-001:** O usuário pode autenticar no sistema
+- **RF-002:** O aluno pode selecionar uma instituição participante a partir de uma lista de opções. 
+- **RF-003:** O sistema deve adicionar ao saldo corrente do professor 1000 (mil) moedas a cada semestre.
+- **RF-004:** O professor pode distribuir moedas aos alunos, indicando o motivo da transferência.
+- **RF-005:** O sistema deve notificar ao aluno que ele recebeu moeda(s) de um professor.
+- **RF-006:** O professor e o aluno podem consultar o extrato da sua conta.
+- **RF-007:** O aluno pode trocar moedas por uma vantagem.
+- **RF-008:** A empresa parceira pode gerenciar vantagens que deseja oferecer, bem como o custo em moedas estudantis.
+- **RF-009:** O sistema deve enviar um email  com cupom ao aluno quando ele resgata uma vantagem.
+- **RF-010:** O sistema deve enviar um email quando há uma troca à empresa parceira.
+- **RF-011:** O professor pode cadastrar critérios de transferência.
+- **RF-012:** O aluno pode solicitar transferência de moeda para outro aluno.
+- **RF-013:** O professor pode avaliar solicitações de transferência.
 
 ### 1.2 Requisitos não funcionais (RNF):
 - **RNF-001:** O sistema deve ser desenvolvido utilizando a arquitetura MVC.
