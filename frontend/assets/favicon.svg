@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="30" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+  <circle cx="32" cy="32" r="26" fill="#FBBF24" stroke="#FEF08A" stroke-width="1.5" stroke-dasharray="2 1.5"/>
+  <circle cx="32" cy="32" r="23" fill="#FCD34D"/>
+  
+  <!-- Livro Aberto -->
+  <path d="M 20 40 C 24 38 28 38 32 41 L 32 47 C 28 45 24 45 20 46 Z" fill="#FFFFFF" stroke="#92400E" stroke-width="1"/>
+  <path d="M 44 40 C 40 38 36 38 32 41 L 32 47 C 36 45 40 45 44 46 Z" fill="#FFFFFF" stroke="#92400E" stroke-width="1"/>
+  
+  <!-- Capelo de Formatura -->
+  <polygon points="32,18 48,24 32,30 16,24" fill="#0F172A" stroke="#334155" stroke-width="0.8"/>
+  <path d="M 23 27 C 23 32 41 32 41 27 L 41 25 C 38 27 26 27 23 25 Z" fill="#1E293B"/>
+  <circle cx="32" cy="24" r="1.5" fill="#FEF08A"/>
+  <path d="M 32 24 Q 26 25 21 28" fill="none" stroke="#F59E0B" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
