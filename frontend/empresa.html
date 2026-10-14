@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Empresa Parceira</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       BARRA DE NAVEGAÇÃO
+       ======================================================================== -->
+  <header class="navbar">
+    <div class="nav-container">
+      
+      <!-- Logotipo & Nome do Software -->
+      <a href="empresa.html" class="brand-wrapper" title="Moeda Estudantil - Empresa Parceira">
+        <div class="brand-logo-container">
+          <img src="assets/logo.svg" alt="Símbolo Moeda Estudantil" class="brand-logo">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Moeda<span>Estudantil</span></span>
+          <span class="brand-subtitle">Portal da Empresa Parceira</span>
+        </div>
+      </a>
+
+      <!-- Ações do Topo -->
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; gap: 0.35rem;" title="Ir para o Portal do Aluno">
+          🎓 Área do Aluno
+        </a>
+
+        <!-- Ações do Usuário Conectado -->
+        <div id="userNavActions" class="user-nav-actions" style="display: none;">
+          <span class="user-greeting">Olá, <strong id="headerEmpresaName">Empresa</strong></span>
+          <button type="button" id="btnLogout" class="btn-logout" title="Sair da conta">
+            Sair
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       CONTEÚDO PRINCIPAL
+       ======================================================================== -->
+  <main class="main-wrapper">
+
+    <!-- ====================================================================
+         ESTADO 1: NÃO AUTENTICADO (CADASTRO E LOGIN DA EMPRESA)
+         ==================================================================== -->
+    <section id="authSection" class="auth-section">
+      <div class="auth-card">
+
+        <!-- Abas de Alternância: Cadastro x Login -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" id="tabCadastroBtn">
+            Cadastrar Empresa
+          </button>
+          <button type="button" class="auth-tab-btn" id="tabLoginBtn">
+            Já sou Parceiro (Entrar)
+          </button>
+        </div>
+
+        <!-- FORMULÁRIO 1: CADASTRO DA EMPRESA (CREATE) -->
+        <div id="cadastroContainer">
+          <div class="card-intro">
+            <h2>Cadastrar Empresa Parceira</h2>
+            <p>Junte-se à rede de benefícios e ofertas do sistema de mérito estudantil.</p>
+          </div>
+
+          <form id="cadastroForm">
+            <div class="form-grid">
+              
+              <!-- Nome Fantasia / Razão Social -->
+              <div class="form-group full-width">
+                <label for="cadNome" class="form-label">Nome da Empresa / Nome Fantasia <span class="required">*</span></label>
+                <input type="text" id="cadNome" class="form-control" placeholder="Ex: Livraria Universitária Campus" required>
+              </div>
+
+              <!-- CNPJ -->
+              <div class="form-group full-width">
+                <label for="cadCnpj" class="form-label">CNPJ <span class="required">*</span></label>
+                <input type="text" id="cadCnpj" class="form-control" placeholder="00.000.000/0000-00" maxlength="18" required>
+              </div>
+
+              <!-- E-mail -->
+              <div class="form-group">
+                <label for="cadEmail" class="form-label">E-mail Corporativo <span class="required">*</span></label>
+                <input type="email" id="cadEmail" class="form-control" placeholder="contato@empresa.com.br" required>
+              </div>
+
+              <!-- Senha -->
+              <div class="form-group">
+                <label for="cadSenha" class="form-label">Senha de Acesso <span class="required">*</span></label>
+                <input type="password" id="cadSenha" class="form-control" placeholder="Crie uma senha" required>
+              </div>
+
+            </div>
+
+            <button type="submit" class="btn-primary full-width-btn" style="margin-top: 1.5rem;">
+              Concluir Cadastro da Empresa
+            </button>
+          </form>
+        </div>
+
+        <!-- FORMULÁRIO 2: LOGIN DA EMPRESA -->
+        <div id="loginContainer" style="display: none;">
+          <div class="card-intro">
+            <h2>Acessar Conta de Parceiro</h2>
+            <p>Entre com o e-mail e senha corporativos.</p>
+          </div>
+
+          <form id="loginForm">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="loginEmail" class="form-label">E-mail Corporativo</label>
+              <input type="email" id="loginEmail" class="form-control" placeholder="contato@empresa.com.br" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label for="loginSenha" class="form-label">Senha</label>
+              <input type="password" id="loginSenha" class="form-control" placeholder="Sua senha" required>
+            </div>
+
+            <button type="submit" class="btn-primary full-width-btn">
+              Entrar
+            </button>
+
+            <!-- Atalho para teste rápido -->
+            <div class="quick-test-box">
+              <small>Empresa de teste cadastrada:</small>
+              <button type="button" id="btnQuickLogin" class="btn-link">
+                Entrar com conta de teste (Livraria Universitária)
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ESTADO 2: AUTENTICADO (VISUALIZAR, EDITAR DADOS E EXCLUIR CONTA)
+         ==================================================================== -->
+    <section id="profileSection" class="profile-section" style="display: none;">
+      
+      <!-- CARTÃO 1: VISUALIZAÇÃO DOS DADOS DA EMPRESA (READ) -->
+      <div id="viewProfileCard" class="profile-card">
+        
+        <div class="profile-card-header">
+          <div class="profile-header-title">
+            <div class="profile-coin-icon">
+              <img src="assets/logo.svg" alt="Moeda Estudantil">
+            </div>
+            <div>
+              <h2>Dados da Empresa Parceira</h2>
+              <p>Consulte e gerencie as informações da sua empresa parceira.</p>
+            </div>
+          </div>
+
+          <button type="button" id="btnOpenEdit" class="btn-secondary">
+            ✏️ Editar Meus Dados
+          </button>
+        </div>
+
+        <!-- Detalhes da Empresa -->
+        <div class="profile-details-grid">
+          <div class="profile-detail-item full-width">
+            <span class="detail-label">Nome da Empresa / Razão Social</span>
+            <span class="detail-value" id="viewNome">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">CNPJ</span>
+            <span class="detail-value highlight-badge" id="viewCnpj">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">E-mail de Contato</span>
+            <span class="detail-value" id="viewEmail">-</span>
+          </div>
+
+          <div class="profile-detail-item full-width">
+            <span class="detail-label">Status da Parceria</span>
+            <span class="detail-value" style="color: var(--primary-deep);">✓ Parceiro Credenciado Ativo</span>
+          </div>
+        </div>
+
+        <!-- Área de Exclusão da Conta (DELETE) -->
+        <div class="danger-zone">
+          <div>
+            <strong>Excluir Cadastro da Empresa</strong>
+            <p>Se desejar, você pode desativar e excluir a conta da empresa do sistema.</p>
+          </div>
+          <button type="button" id="btnOpenDeleteModal" class="btn-danger">
+            Excluir Conta da Empresa
+          </button>
+        </div>
+
+      </div>
+
+      <!-- CARTÃO 2: EDIÇÃO DOS DADOS DA EMPRESA (UPDATE) -->
+      <div id="editProfileCard" class="profile-card" style="display: none;">
+        
+        <div class="profile-card-header">
+          <div>
+            <h2>Editar Dados da Empresa</h2>
+            <p>Atualize os dados de identificação e contato.</p>
+          </div>
+          <button type="button" id="btnCancelEdit" class="btn-secondary">
+            Cancelar
+          </button>
+        </div>
+
+        <form id="editForm">
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label for="editNome" class="form-label">Nome da Empresa / Nome Fantasia <span class="required">*</span></label>
+              <input type="text" id="editNome" class="form-control" required>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="editCnpj" class="form-label">CNPJ <span class="required">*</span></label>
+              <input type="text" id="editCnpj" class="form-control" maxlength="18" required>
+            </div>
+
+            <div class="form-group">
+              <label for="editEmail" class="form-label">E-mail Corporativo <span class="required">*</span></label>
+              <input type="email" id="editEmail" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="editSenha" class="form-label">Nova Senha (opcional)</label>
+              <input type="password" id="editSenha" class="form-control" placeholder="Deixe em branco para manter a atual">
+            </div>
+
+          </div>
+
+          <div class="card-footer-actions">
+            <button type="button" id="btnCancelEditBottom" class="btn-secondary">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       MODAL DE CONFIRMAÇÃO DE EXCLUSÃO DE CONTA (DELETE)
+       ======================================================================== -->
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 style="color: #b45309; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚠️</span> Confirmar Exclusão
+        </h3>
+        <button type="button" class="btn-close" id="btnCloseDeleteModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="margin-bottom: 0.5rem; color: var(--text-main);">
+          Tem certeza de que deseja <strong>excluir o cadastro</strong> desta empresa parceira?
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Esta ação removerá permanentemente os dados da empresa do Sistema de Moeda Estudantil.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnCancelDelete">Cancelar</button>
+        <button type="button" class="btn-danger" id="btnConfirmDelete">
+          Sim, Excluir Cadastro
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Toasts / Avisos -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Rodapé Simples -->
+  <footer class="footer">
+    <p>Sistema de Moeda Estudantil &bull; Laboratório de Desenvolvimento de Software &bull; PUC Minas</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/empresa-api.js"></script>
+  <script src="js/empresa.js"></script>
+
+</body>
+</html>
