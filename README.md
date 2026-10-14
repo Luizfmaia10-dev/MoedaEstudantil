@@ -87,7 +87,7 @@ Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de
 * Veja o [**diagrama de casos de uso**](Artefatos/diagrama-casos-de-uso.pdf)
 * Veja o [**diagrama de classes**](Artefatos/diagrama-classes-v2.pdf)
 * Veja o [**diagrama de componentes**](Artefatos/diagrama-componentes.pdf)
-* **Modelo ER**
+* Veja o [**diagrama de componentes**](Artefatos/diagramaER.md)
 
 ---
 ## 🛠️ Tecnologias e Arquitetura
