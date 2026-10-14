@@ -1,0 +1,623 @@
+/* ==========================================================================
+   SISTEMA DE MOEDA ESTUDANTIL - ÁREA DO ALUNO
+   Paleta: Combinações de Amarelo e Branco (#F59E0B, #FBBF24, #FEF3C7, #FFFFFF)
+   Design: Simples, focado no próprio aluno (Cadastro, Visualização, Edição, Exclusão)
+   ========================================================================== */
+
+:root {
+  /* Cores Amarelas / Douradas */
+  --primary-yellow: #f59e0b;       /* Âmbar vibrante */
+  --primary-light: #fbbf24;        /* Amarelo dourado */
+  --primary-subtle: #fef3c7;       /* Amarelo claro suave */
+  --primary-bg: #fffdf5;           /* Branco quente / creme */
+  --primary-deep: #b45309;         /* Âmbar escuro para textos de destaque */
+  --border-yellow: #fde68a;        /* Borda amarela suave */
+
+  /* Cores Brancas & Superfície */
+  --bg-white: #ffffff;
+  --bg-page: #faf8f5;              /* Fundo claro acetinado */
+  --border-subtle: #f1ebd8;
+  
+  /* Textos de Alto Contraste */
+  --text-main: #1f2937;            /* Carvão escuro */
+  --text-secondary: #4b5563;       /* Cinza médio */
+  --text-muted: #6b7280;           /* Cinza claro */
+  
+  /* Feedback */
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
+  --color-success: #10b981;
+
+  /* Formas e Efeitos */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 14px rgba(245, 158, 11, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px rgba(245, 158, 11, 0.18), 0 4px 6px rgba(0, 0, 0, 0.04);
+  
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   NAVBAR
+   ========================================================================== */
+.navbar {
+  background: var(--bg-white);
+  border-bottom: 2px solid var(--border-yellow);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-logo-container {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-main);
+}
+
+.brand-title span {
+  color: var(--primary-yellow);
+}
+
+.brand-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.user-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-greeting {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.user-greeting strong {
+  color: var(--text-main);
+}
+
+.btn-logout {
+  background: var(--primary-subtle);
+  border: 1px solid var(--border-yellow);
+  color: var(--primary-deep);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-logout:hover {
+  background: #fde68a;
+}
+
+/* ==========================================================================
+   CONTEÚDO PRINCIPAL
+   ========================================================================== */
+.main-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  flex: 1;
+  width: 100%;
+}
+
+/* ==========================================================================
+   SEÇÃO DE AUTENTICAÇÃO (CADASTRO E LOGIN)
+   ========================================================================== */
+.auth-section {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border-yellow);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 620px;
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--primary-bg);
+  border: 1px solid var(--border-yellow);
+  border-radius: var(--radius-full);
+  padding: 0.3rem;
+  margin-bottom: 1.75rem;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.auth-tab-btn.active {
+  background: var(--bg-white);
+  color: var(--primary-deep);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-intro {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card-intro h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+}
+
+.card-intro p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   FORMULÁRIOS & CAMPOS
+   ========================================================================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.form-label span.required {
+  color: var(--color-danger);
+}
+
+.form-control {
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  color: var(--text-main);
+  background: #ffffff;
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.form-control:focus {
+  border-color: var(--primary-yellow);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+/* Botões */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #78350f;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.25);
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
+  transform: translateY(-1px);
+}
+
+.btn-primary.full-width-btn {
+  width: 100%;
+}
+
+.btn-secondary {
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-yellow);
+  background: var(--bg-white);
+  color: var(--primary-deep);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-subtle);
+}
+
+.btn-danger {
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid #f87171;
+  background: var(--color-danger-bg);
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-danger:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.quick-test-box {
+  margin-top: 1.25rem;
+  padding: 0.75rem;
+  background: var(--primary-bg);
+  border: 1px dashed var(--border-yellow);
+  border-radius: var(--radius-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.btn-link {
+  background: transparent;
+  border: none;
+  color: var(--primary-deep);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   SEÇÃO DO PERFIL DO ALUNO (VISUALIZAR, EDITAR, EXCLUIR)
+   ========================================================================== */
+.profile-section {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border-yellow);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 720px;
+}
+
+.profile-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--border-yellow);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-coin-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.profile-coin-icon img {
+  width: 100%;
+  height: 100%;
+}
+
+.profile-header-title h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.profile-header-title p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+/* Grade de Dados do Perfil */
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.profile-detail-item {
+  display: flex;
+  flex-direction: column;
+  background: var(--primary-bg);
+  border: 1px solid var(--border-yellow);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+}
+
+.profile-detail-item.full-width {
+  grid-column: span 2;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--primary-deep);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.detail-value.highlight-badge {
+  color: #78350f;
+}
+
+/* Área de Exclusão (Zona de Risco) */
+.danger-zone {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.danger-zone strong {
+  color: #b91c1c;
+  font-size: 0.95rem;
+}
+
+.danger-zone p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.card-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.25rem;
+}
+
+/* ==========================================================================
+   MODAL DE CONFIRMAÇÃO
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-container {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-yellow);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 1.1rem 1.35rem;
+  background: var(--primary-bg);
+  border-bottom: 1px solid var(--border-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.btn-close:hover {
+  color: var(--text-main);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.35rem;
+  background: var(--primary-bg);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ==========================================================================
+   TOASTS DE NOTIFICAÇÃO
+   ========================================================================== */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 2000;
+}
+
+.toast {
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-left: 5px solid var(--primary-yellow);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.toast.success {
+  border-left-color: var(--color-success);
+}
+
+.toast.danger {
+  border-left-color: var(--color-danger);
+}
+
+/* ==========================================================================
+   RODAPÉ
+   ========================================================================== */
+.footer {
+  background: var(--bg-white);
+  border-top: 1px solid var(--border-yellow);
+  padding: 1.25rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: auto;
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+
+  .profile-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-detail-item.full-width {
+    grid-column: span 1;
+  }
+
+  .profile-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
