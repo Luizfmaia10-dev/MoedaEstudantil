@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Minhas Vantagens</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .vant-wrap { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    .vant-topo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; }
+    .vant-topo h1 { font-size: 1.25rem; color: var(--primary-deep); }
+    .vant-topo small { color: var(--text-muted); }
+    .btn-nova { background: var(--primary-yellow); color: #fff; border: none; border-radius: var(--radius-md); padding: .6rem 1.1rem; font-weight: 600; cursor: pointer; }
+    .btn-nova:hover { background: var(--primary-deep); }
+    .vant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; list-style: none; }
+    .vant-card { background: var(--bg-white); border: 1px solid var(--border-yellow); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; }
+    .vant-foto { width: 100%; height: 160px; object-fit: cover; background: var(--primary-subtle); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+    .vant-corpo { padding: 1rem; flex: 1; }
+    .vant-corpo h3 { font-size: 1rem; margin-bottom: .35rem; }
+    .vant-corpo p { font-size: .85rem; color: var(--text-secondary); }
+    .vant-custo { display: inline-block; margin-top: .6rem; background: var(--primary-subtle); color: var(--primary-deep); font-weight: 700; padding: .2rem .65rem; border-radius: var(--radius-full); font-size: .85rem; }
+    .vant-acoes { display: flex; gap: .5rem; padding: .75rem 1rem; border-top: 1px solid var(--border-subtle); }
+    .vant-acoes button { flex: 1; padding: .4rem; border-radius: var(--radius-sm); border: 1px solid var(--border-yellow); background: #fff; cursor: pointer; }
+    .vant-acoes .remover { color: var(--color-danger); border-color: #fecaca; }
+    .vant-msg { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); }
+    #vantErro { color: var(--color-danger); background: var(--color-danger-bg); border-radius: var(--radius-md); }
+    .modal-fundo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+    .modal-fundo.aberto { display: flex; }
+    .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 460px; padding: 1.5rem; max-height: 95vh; overflow: auto; }
+    .modal h2 { margin-bottom: 1rem; font-size: 1.1rem; color: var(--primary-deep); }
+    .campo { margin-bottom: .9rem; }
+    .campo label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: .25rem; }
+    .campo input[type=text], .campo input[type=number], .campo textarea { width: 100%; padding: .5rem .6rem; border: 1px solid var(--border-yellow); border-radius: var(--radius-sm); font: inherit; }
+    .campo textarea { min-height: 80px; resize: vertical; }
+    .previa { width: 100%; max-height: 160px; object-fit: cover; border-radius: var(--radius-md); margin-top: .5rem; display: none; }
+    .form-erro { color: var(--color-danger); font-size: .85rem; margin-bottom: .75rem; display: none; }
+    .modal-acoes { display: flex; gap: .5rem; justify-content: flex-end; }
+    .modal-acoes button { padding: .55rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-yellow); background: #fff; cursor: pointer; }
+    .modal-acoes .salvar { background: var(--primary-yellow); border-color: var(--primary-yellow); color: #fff; font-weight: 600; }
+    .modal-acoes button:disabled { opacity: .6; cursor: wait; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="dev-menu.html" class="brand-wrapper" title="Moeda Estudantil">
+        <div class="brand-logo-container"><img src="assets/logo.svg" alt="Moeda Estudantil" class="brand-logo"></div>
+        <div class="brand-text">
+          <span class="brand-title">Moeda<span>Estudantil</span></span>
+          <span class="brand-subtitle">Gestão de Vantagens</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="vant-wrap">
+    <div class="vant-topo">
+      <div>
+        <h1>Minhas Vantagens</h1>
+        <small>Vantagens ativas oferecidas aos alunos</small>
+      </div>
+      <button type="button" id="btnNova" class="btn-nova">+ Nova vantagem</button>
+    </div>
+
+    <div id="vantLoading" class="vant-msg">Carregando vantagens...</div>
+    <div id="vantErro" class="vant-msg" style="display:none;"></div>
+    <div id="vantVazio" class="vant-msg" style="display:none;">Nenhuma vantagem cadastrada ainda.</div>
+    <ul id="vantLista" class="vant-grid"></ul>
+  </main>
+
+  <!-- Modal de criação/edição -->
+  <div id="modalFundo" class="modal-fundo">
+    <form id="formVantagem" class="modal" novalidate>
+      <h2 id="modalTitulo">Nova vantagem</h2>
+
+      <div class="campo">
+        <label for="fNome">Nome</label>
+        <input type="text" id="fNome" maxlength="120">
+      </div>
+      <div class="campo">
+        <label for="fDescricao">Descrição</label>
+        <textarea id="fDescricao" maxlength="500"></textarea>
+      </div>
+      <div class="campo">
+        <label for="fCusto">Custo (moedas)</label>
+        <input type="number" id="fCusto" min="1" step="1">
+      </div>
+      <div class="campo">
+        <label for="fFoto">Foto do produto <span id="fotoDica" style="font-weight:400;color:var(--text-muted);"></span></label>
+        <input type="file" id="fFoto" accept="image/jpeg,image/png,image/webp,image/gif">
+        <img id="fPrevia" class="previa" alt="Prévia da foto">
+      </div>
+
+      <div id="formErro" class="form-erro"></div>
+      <div class="modal-acoes">
+        <button type="button" id="btnCancelar">Cancelar</button>
+        <button type="submit" id="btnSalvar" class="salvar">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="js/vantagens-api.js"></script>
+  <script src="js/vantagens.js"></script>
+</body>
+</html>
