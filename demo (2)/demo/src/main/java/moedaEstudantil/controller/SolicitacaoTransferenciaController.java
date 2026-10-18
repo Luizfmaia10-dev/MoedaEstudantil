@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/alunos/{alunoId}")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class SolicitacaoTransferenciaController {
 
@@ -22,28 +22,33 @@ public class SolicitacaoTransferenciaController {
             String justificativa) {
     }
 
+    public record AvaliacaoRequest(String observacao) {
+    }
+
     private final SolicitacaoTransferenciaService service;
 
     public SolicitacaoTransferenciaController(SolicitacaoTransferenciaService service) {
         this.service = service;
     }
 
-    @GetMapping("/colegas")
+    /* ---------- Endpoints do Aluno (RF-012) ---------- */
+
+    @GetMapping("/alunos/{alunoId}/colegas")
     public List<ColegaDTO> listarColegas(@PathVariable Long alunoId) {
         return service.listarColegas(alunoId);
     }
 
-    @GetMapping("/saldo-disponivel")
+    @GetMapping("/alunos/{alunoId}/saldo-disponivel")
     public SaldoDisponivelDTO saldoDisponivel(@PathVariable Long alunoId) {
         return service.saldoDisponivel(alunoId);
     }
 
-    @GetMapping("/transferencias")
+    @GetMapping("/alunos/{alunoId}/transferencias")
     public List<SolicitacaoTransferenciaDTO> listar(@PathVariable Long alunoId) {
         return service.listar(alunoId);
     }
 
-    @PostMapping("/transferencias")
+    @PostMapping("/alunos/{alunoId}/transferencias")
     public ResponseEntity<SolicitacaoTransferenciaDTO> criar(@PathVariable Long alunoId,
                                                              @RequestBody NovaSolicitacaoRequest body) {
         SolicitacaoTransferenciaDTO criada = service.criar(
@@ -55,9 +60,32 @@ public class SolicitacaoTransferenciaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(criada);
     }
 
-    @DeleteMapping("/transferencias/{solicitacaoId}")
+    @DeleteMapping("/alunos/{alunoId}/transferencias/{solicitacaoId}")
     public SolicitacaoTransferenciaDTO cancelar(@PathVariable Long alunoId,
                                                 @PathVariable Long solicitacaoId) {
         return service.cancelar(alunoId, solicitacaoId);
+    }
+
+    /* ---------- Endpoints do Professor (RF-013) ---------- */
+
+    @GetMapping("/professores/{professorId}/transferencias")
+    public List<SolicitacaoTransferenciaDTO> listarParaProfessor(
+            @PathVariable Long professorId,
+            @RequestParam(required = false) String status) {
+        return service.listarParaProfessor(professorId, status);
+    }
+
+    @PostMapping("/professores/{professorId}/transferencias/{solicitacaoId}/aprovar")
+    public SolicitacaoTransferenciaDTO aprovar(@PathVariable Long professorId,
+                                               @PathVariable Long solicitacaoId,
+                                               @RequestBody(required = false) AvaliacaoRequest body) {
+        return service.aprovar(professorId, solicitacaoId, body == null ? null : body.observacao());
+    }
+
+    @PostMapping("/professores/{professorId}/transferencias/{solicitacaoId}/recusar")
+    public SolicitacaoTransferenciaDTO recusar(@PathVariable Long professorId,
+                                               @PathVariable Long solicitacaoId,
+                                               @RequestBody(required = false) AvaliacaoRequest body) {
+        return service.recusar(professorId, solicitacaoId, body == null ? null : body.observacao());
     }
 }
