@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Solicitar Transferência</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .transf-wrap { max-width: 780px; margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .transf-card { background: var(--bg-white); border: 1px solid var(--border-yellow); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .transf-topo { padding: 1.35rem 1.5rem; background: var(--primary-subtle); border-bottom: 1px solid var(--border-yellow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .transf-topo h1 { font-size: 1.15rem; color: var(--primary-deep); }
+    .transf-topo small { color: var(--text-muted); display: block; margin-top: 2px; }
+    .saldos-box { display: flex; gap: 1.25rem; text-align: right; }
+    .saldos-box div span { display: block; font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .saldos-box div strong { font-size: 1.45rem; color: var(--primary-deep); }
+    .saldos-box div.pendente strong { color: var(--text-secondary); font-size: 1.15rem; }
+    .transf-form { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .campo label { display: block; font-size: .84rem; font-weight: 600; margin-bottom: .3rem; color: var(--text-main); }
+    .campo select, .campo input[type=number], .campo textarea { width: 100%; padding: .55rem .7rem; border: 1px solid var(--border-yellow); border-radius: var(--radius-sm); font: inherit; background: #fff; }
+    .campo textarea { min-height: 76px; resize: vertical; }
+    .campo-ajuda { font-size: .76rem; color: var(--text-muted); margin-top: .25rem; display: flex; justify-content: space-between; }
+    .criterio-box { background: var(--primary-bg); border: 1px solid var(--border-yellow); border-left: 4px solid var(--primary-yellow); border-radius: var(--radius-md); padding: .85rem 1rem; display: none; }
+    .criterio-box strong { display: block; font-size: .8rem; color: var(--primary-deep); text-transform: uppercase; letter-spacing: .03em; margin-bottom: .3rem; }
+    .criterio-box p { white-space: pre-wrap; font-size: .88rem; color: var(--text-secondary); }
+    .rodape-form { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: .25rem; }
+    .btn-enviar { background: var(--primary-yellow); color: #fff; border: none; border-radius: var(--radius-md); padding: .65rem 1.4rem; font-weight: 600; cursor: pointer; }
+    .btn-enviar:hover { background: var(--primary-deep); }
+    .btn-enviar:disabled { opacity: .6; cursor: not-allowed; }
+    #formFeedback { font-size: .88rem; }
+    #formFeedback.ok { color: var(--color-success); font-weight: 500; }
+    #formFeedback.erro { color: var(--color-danger); font-weight: 500; }
+    .sec-titulo { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-subtle); font-size: 1rem; color: var(--primary-deep); }
+    #listaSolicitacoes { list-style: none; }
+    .sol-item { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .sol-item:last-child { border-bottom: none; }
+    .sol-principal { font-weight: 500; }
+    .sol-meta { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+    .sol-just { font-size: .82rem; color: var(--text-secondary); margin-top: 4px; font-style: italic; }
+    .sol-direita { display: flex; align-items: center; gap: .6rem; }
+    .badge-status { font-size: .72rem; font-weight: 700; padding: .2rem .6rem; border-radius: var(--radius-full); text-transform: uppercase; }
+    .badge-status.PENDENTE { background: var(--primary-subtle); color: var(--primary-deep); }
+    .badge-status.APROVADA { background: #d1fae5; color: #065f46; }
+    .badge-status.RECUSADA { background: var(--color-danger-bg); color: var(--color-danger); }
+    .badge-status.CANCELADA { background: #f3f4f6; color: var(--text-muted); }
+    .btn-cancelar { padding: .35rem .7rem; border: 1px solid #fecaca; color: var(--color-danger); background: #fff; border-radius: var(--radius-sm); font-size: .78rem; cursor: pointer; }
+    .btn-cancelar:hover { background: var(--color-danger-bg); }
+    .msg-bloco { padding: 2rem 1.5rem; text-align: center; color: var(--text-muted); }
+    #erroGeral { color: var(--color-danger); background: var(--color-danger-bg); }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="dev-menu.html" class="brand-wrapper" title="Moeda Estudantil">
+        <div class="brand-logo-container"><img src="assets/logo.svg" alt="Moeda Estudantil" class="brand-logo"></div>
+        <div class="brand-text">
+          <span class="brand-title">Moeda<span>Estudantil</span></span>
+          <span class="brand-subtitle">Transferência entre Alunos</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="transf-wrap">
+    <div id="loading" class="msg-bloco transf-card">Carregando...</div>
+    <div id="erroGeral" class="msg-bloco transf-card" style="display:none;"></div>
+
+    <div id="conteudo" style="display:none;flex-direction:column;gap:1.5rem;">
+      <section class="transf-card">
+        <div class="transf-topo">
+          <div>
+            <h1>Solicitar Transferência de Moedas</h1>
+            <small>A solicitação será avaliada pelo professor escolhido da sua instituição</small>
+          </div>
+          <div class="saldos-box">
+            <div class="pendente">
+              <span>Em análise</span>
+              <strong id="saldoPendente">0</strong>
+            </div>
+            <div>
+              <span>Disponível (moedas)</span>
+              <strong id="saldoDisponivel">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <form id="formTransferencia" class="transf-form" novalidate>
+          <div class="campo">
+            <label for="selDestinatario">Aluno destinatário (mesma instituição)</label>
+            <select id="selDestinatario" required>
+              <option value="">Selecione um colega...</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="selAvaliador">Professor avaliador (mesma instituição)</label>
+            <select id="selAvaliador" required>
+              <option value="">Selecione um professor...</option>
+            </select>
+          </div>
+
+          <div id="criterioBox" class="criterio-box">
+            <strong>Critérios do professor selecionado</strong>
+            <p id="criterioTexto"></p>
+          </div>
+
+          <div class="campo">
+            <label for="inpQuantidade">Quantidade de moedas</label>
+            <input type="number" id="inpQuantidade" min="1" step="1" placeholder="Ex.: 20" required>
+            <div class="campo-ajuda">
+              <span id="dicaLimite">Mínimo de 1 moeda.</span>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="inpJustificativa">Justificativa para o professor <span style="font-weight:400;color:var(--text-muted);">(opcional)</span></label>
+            <textarea id="inpJustificativa" maxlength="300" placeholder="Explique brevemente o motivo da transferência..."></textarea>
+            <div class="campo-ajuda">
+              <span>Visível ao professor na avaliação</span>
+              <span id="contadorJust">0/300</span>
+            </div>
+          </div>
+
+          <div class="rodape-form">
+            <span id="formFeedback"></span>
+            <button type="submit" id="btnEnviar" class="btn-enviar">Solicitar transferência</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="transf-card">
+        <h2 class="sec-titulo">Minhas solicitações</h2>
+        <ul id="listaSolicitacoes"></ul>
+        <div id="vazioSolicitacoes" class="msg-bloco" style="display:none;">Nenhuma solicitação realizada ainda.</div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/transferencia-api.js"></script>
+  <script src="js/solicitar-transferencia.js"></script>
+</body>
+</html>
