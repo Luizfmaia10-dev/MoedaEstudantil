@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Critérios de Transferência</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .crit-card { max-width: 680px; margin: 2rem auto; background: var(--bg-white); border: 1px solid var(--border-yellow); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; }
+    .crit-card h1 { font-size: 1.15rem; color: var(--primary-deep); }
+    .crit-card .sub { color: var(--text-muted); font-size: .85rem; margin: .2rem 0 1rem; }
+    .crit-ajuda { background: var(--primary-subtle); border-radius: var(--radius-md); padding: .7rem .9rem; font-size: .83rem; color: var(--text-secondary); margin-bottom: 1rem; }
+    textarea { width: 100%; min-height: 180px; padding: .6rem; border: 1px solid var(--border-yellow); border-radius: var(--radius-sm); font: inherit; resize: vertical; }
+    .contador { text-align: right; font-size: .78rem; color: var(--text-muted); margin-top: .25rem; }
+    .contador.excedido { color: var(--color-danger); font-weight: 600; }
+    .rodape { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; gap: 1rem; }
+    .btn-salvar { background: var(--primary-yellow); color: #fff; border: none; border-radius: var(--radius-md); padding: .6rem 1.3rem; font-weight: 600; cursor: pointer; }
+    .btn-salvar:disabled { opacity: .6; cursor: not-allowed; }
+    #msg { font-size: .88rem; }
+    #msg.ok { color: var(--color-success); }
+    #msg.erro { color: var(--color-danger); }
+    .crit-msg { text-align: center; padding: 2rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="dev-menu.html" class="brand-wrapper" title="Moeda Estudantil">
+        <div class="brand-logo-container"><img src="assets/logo.svg" alt="Moeda Estudantil" class="brand-logo"></div>
+        <div class="brand-text">
+          <span class="brand-title">Moeda<span>Estudantil</span></span>
+          <span class="brand-subtitle">Portal do Professor</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <div id="loading" class="crit-msg">Carregando...</div>
+    <div id="erroGeral" class="crit-msg" style="display:none;color:var(--color-danger);"></div>
+
+    <section id="conteudo" class="crit-card" style="display:none;">
+      <h1>Critérios de Transferência</h1>
+      <p class="sub" id="professorInfo"></p>
+      <div class="crit-ajuda">
+        Este texto é informativo: os alunos da sua instituição o consultam antes de solicitar uma
+        transferência de moedas. Deixe em branco para não exibir critérios.
+      </div>
+      <textarea id="criterios" aria-label="Critérios de transferência"></textarea>
+      <div id="contador" class="contador"></div>
+      <div class="rodape">
+        <span id="msg"></span>
+        <button type="button" id="btnSalvar" class="btn-salvar">Salvar</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/criterios-api.js"></script>
+  <script src="js/criterios-professor.js"></script>
+</body>
+</html>
