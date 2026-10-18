@@ -28,3 +28,27 @@ VALUES (3, 'Carlos Silva', '333.333.333-33', 'Escola de Belas Artes - Teatro', '
 INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (1, 1000, 1);
 INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (2, 1000, 2);
 INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (3, 1000, 3);
+
+-- 5. Carga de exemplo para testar o extrato (RF-006)
+-- Aluno de teste: usuario_id 4 / conta 4. Professor Glender: usuario_id 1 / conta 1.
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
+VALUES (4, 'aluno.teste@sga.pucminas.br', 'senha123', 'ALUNO');
+
+INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
+VALUES (4, 'Aluno Teste', '444.444.444-44', 'MG-00.000.000', 'Rua Teste, 100', 'Engenharia de Software', 1);
+
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (4, 70, 4);
+
+-- Professor envia 100 moedas ao aluno (aparece nos dois extratos)
+INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, motivo, professor_id, aluno_id)
+VALUES (1, 'ENVIO', '2026-09-01 10:00:00', 100, 'SAIDA', 1, 'Excelente participacao em aula', 1, 4);
+INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, motivo, professor_id, aluno_id)
+VALUES (2, 'ENVIO', '2026-09-01 10:00:00', 100, 'ENTRADA', 4, 'Excelente participacao em aula', 1, 4);
+
+-- Aluno recebe mais 30 moedas e depois resgata uma vantagem de 60 (saldo final 70)
+INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, motivo, professor_id, aluno_id)
+VALUES (3, 'ENVIO', '2026-09-15 14:30:00', 30, 'SAIDA', 1, 'Entrega antecipada do laboratorio', 1, 4);
+INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, motivo, professor_id, aluno_id)
+VALUES (4, 'ENVIO', '2026-09-15 14:30:00', 30, 'ENTRADA', 4, 'Entrega antecipada do laboratorio', 1, 4);
+INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, codigo_cupom, aluno_id)
+VALUES (5, 'RESGATE', '2026-10-02 09:15:00', 60, 'SAIDA', 4, 'CUPOM-ABC123', 4);
