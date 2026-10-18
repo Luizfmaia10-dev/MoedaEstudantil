@@ -14,6 +14,9 @@ public class Vantagem {
     private String fotoUrl;
     private Integer custoMoedas;
 
+    // Exclusao logica: preserva o historico de resgates que referenciam a vantagem
+    private Boolean ativa = true;
+
     @ManyToOne
     @JoinColumn(name = "empresa_id")
     private EmpresaParceira empresa;
@@ -28,6 +31,8 @@ public class Vantagem {
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
     public Integer getCustoMoedas() { return custoMoedas; }
     public void setCustoMoedas(Integer custoMoedas) { this.custoMoedas = custoMoedas; }
+    public Boolean getAtiva() { return ativa == null || ativa; }
+    public void setAtiva(Boolean ativa) { this.ativa = ativa; }
     public EmpresaParceira getEmpresa() { return empresa; }
     public void setEmpresa(EmpresaParceira empresa) { this.empresa = empresa; }
 }
