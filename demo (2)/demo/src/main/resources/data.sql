@@ -84,3 +84,8 @@ VALUES (8, 'pedro.almeida@ufmg.br', 'senha123', 'ALUNO');
 INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
 VALUES (8, 'Pedro Almeida', '888.888.888-88', 'MG-88.888.888', 'Av. Antonio Carlos, 6627', 'Sistemas de Informacao', 2);
 INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (8, 100, 8);
+
+
+-- 9. RF-013: Solicitacao pendente de exemplo para o Professor 1 (Glender) avaliar
+INSERT IGNORE INTO solicitacao_transferencia (id, data_solicitacao, quantidade, status, justificativa, remetente_id, destinatario_id, avaliador_id)
+VALUES (1, '2026-10-15 11:00:00', 15, 'PENDENTE', 'Mariana me ajudou na revisao do projeto de Laboratorio', 4, 6, 1);
