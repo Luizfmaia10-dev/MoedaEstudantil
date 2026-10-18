@@ -52,3 +52,8 @@ INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_mo
 VALUES (4, 'ENVIO', '2026-09-15 14:30:00', 30, 'ENTRADA', 4, 'Entrega antecipada do laboratorio', 1, 4);
 INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, codigo_cupom, aluno_id)
 VALUES (5, 'RESGATE', '2026-10-02 09:15:00', 60, 'SAIDA', 4, 'CUPOM-ABC123', 4);
+-- 6. Carga de exemplo para testar a gestao de vantagens (RF-008)
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario) VALUES (5, 'contato@cantinadapuc.com.br', 'senha123', 'EMPRESA');
+INSERT IGNORE INTO empresa_parceira (usuario_id, nome, cnpj) VALUES (5, 'Cantina da PUC', '12.345.678/0001-90');
+INSERT IGNORE INTO vantagem (id, nome, descricao, foto_url, custo_moedas, ativa, empresa_id) VALUES (1, 'Combo Lanche', 'Sanduiche natural + suco de 300ml', NULL, 40, true, 5);
+INSERT IGNORE INTO vantagem (id, nome, descricao, foto_url, custo_moedas, ativa, empresa_id) VALUES (2, 'Desconto de 20% na copiadora', 'Valido para impressoes e copias do mes', NULL, 25, true, 5);
