@@ -91,7 +91,10 @@ function renderizarSolicitacoes(lista) {
   ul.innerHTML = lista.map(s => {
     const pendente = s.status === 'PENDENTE';
     const just = s.justificativa
-      ? `<div class="sol-just">"${escapeHtml(s.justificativa)}"</div>`
+      ? `<div class="sol-just">Sua justificativa: "${escapeHtml(s.justificativa)}"</div>`
+      : '';
+    const obs = s.observacaoAvaliador
+      ? `<div class="sol-just" style="font-style:normal;color:var(--primary-deep);">Parecer do professor: "${escapeHtml(s.observacaoAvaliador)}"</div>`
       : '';
     const botaoCancelar = pendente
       ? `<button type="button" class="btn-cancelar" data-cancelar="${s.id}">Cancelar</button>`
@@ -102,6 +105,7 @@ function renderizarSolicitacoes(lista) {
           <div class="sol-principal">${s.quantidade} moedas para ${escapeHtml(s.destinatarioNome)}</div>
           <div class="sol-meta">${formatarData(s.dataSolicitacao)} · Avaliador: Prof. ${escapeHtml(s.avaliadorNome)}</div>
           ${just}
+          ${obs}
         </div>
         <div class="sol-direita">
           <span class="badge-status ${escapeHtml(s.status)}">${escapeHtml(STATUS_ROTULO[s.status] || s.status)}</span>
