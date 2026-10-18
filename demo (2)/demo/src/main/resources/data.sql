@@ -57,3 +57,6 @@ INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario) VALUES (5, 'contato@
 INSERT IGNORE INTO empresa_parceira (usuario_id, nome, cnpj) VALUES (5, 'Cantina da PUC', '12.345.678/0001-90');
 INSERT IGNORE INTO vantagem (id, nome, descricao, foto_url, custo_moedas, ativa, empresa_id) VALUES (1, 'Combo Lanche', 'Sanduiche natural + suco de 300ml', NULL, 40, true, 5);
 INSERT IGNORE INTO vantagem (id, nome, descricao, foto_url, custo_moedas, ativa, empresa_id) VALUES (2, 'Desconto de 20% na copiadora', 'Valido para impressoes e copias do mes', NULL, 25, true, 5);
+
+-- 7. RF-011: amplia a coluna de criterios para 1000 caracteres (ddl-auto=update nao altera colunas existentes)
+ALTER TABLE professor MODIFY criterios_transferencia VARCHAR(1000);

@@ -10,6 +10,7 @@ public class Professor extends Usuario {
     private String nome;
     private String cpf;
     private String departamento;
+    @Column(length = 1000)
     private String criteriosTransferencia;
 
     @ManyToOne
