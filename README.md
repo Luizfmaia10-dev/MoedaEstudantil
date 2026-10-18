@@ -98,6 +98,58 @@ Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de
 * **Controle de Versão:** Utilização de repositório GitHub para controle do código e modelos UML.
 
 ---
+## 🚀 Como Rodar a Aplicação
+
+### 1. Pré-requisitos
+* **Java JDK 21** instalado e configurado no `PATH`.
+* **MySQL 8+** em execução local (ou remoto).
+
+### 2. Configuração do Banco de Dados
+1. Crie um banco de dados vazio no MySQL:
+   ```sql
+   CREATE DATABASE moeda_estudantil CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+2. Na pasta do projeto Spring Boot (`demo (2)/demo`), crie ou edite o arquivo `.env` (ou defina variáveis de ambiente no sistema) com as credenciais do seu MySQL:
+   ```env
+   DB_URL=jdbc:mysql://localhost:3306/moeda_estudantil?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+   DB_USER=root
+   DB_PASSWORD=sua_senha_aqui
+   ```
+   > Ao iniciar, o Hibernate criará/atualizará as tabelas automaticamente (`ddl-auto=update`) e o Spring executará a carga inicial de testes do arquivo `src/main/resources/data.sql`.
+
+### 3. Executando o Backend (Spring Boot)
+No terminal, acesse o diretório `demo (2)/demo` e utilize o Maven Wrapper incluído no projeto:
+
+**No Windows (PowerShell / CMD):**
+```powershell
+cd "demo (2)/demo"
+.\mvnw.cmd spring-boot:run
+```
+
+**No Linux / macOS:**
+```bash
+cd "demo (2)/demo"
+./mvnw spring-boot:run
+```
+
+O servidor iniciará na porta **`8080`** (`http://localhost:8080`).
+
+Para executar a suíte de **testes automatizados (JUnit 5 + Mockito)**:
+```powershell
+.\mvnw.cmd test
+```
+
+### 4. Acessando o Frontend
+Com o backend em execução, você pode acessar a interface diretamente pelo navegador (servida pelo próprio Spring Boot) ou abrir a pasta `frontend/` com uma extensão como o *Live Server*:
+
+* **Menu Central de Desenvolvimento (todas as funcionalidades por perfil):**
+  `http://localhost:8080/dev-menu.html`
+* **Portal do Aluno (Cadastro / Login):**
+  `http://localhost:8080/index.html`
+* **Portal da Empresa Parceira (Cadastro / Login):**
+  `http://localhost:8080/empresa.html`
+
+---
 ## 👥 Autores / Disciplina
 
 * **Alunos**: Caio César Falinacio dos Santos, Luiz Fernando Cunha Maia e Pedro Henrique Nogueira
