@@ -1,6 +1,9 @@
 package moedaEstudantil.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.Date;
 
 @Entity
@@ -14,7 +17,13 @@ public class SolicitacaoTransferencia {
     private Integer quantidade;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(length = 20)
     private StatusSolicitacaoTransferencia status;
+
+    // Justificativa opcional do aluno para o professor avaliador
+    @Column(length = 300)
+    private String justificativa;
 
     @ManyToOne
     @JoinColumn(name = "remetente_id")
@@ -36,6 +45,8 @@ public class SolicitacaoTransferencia {
     public void setQuantidade(Integer quantidade) { this.quantidade = quantidade; }
     public StatusSolicitacaoTransferencia getStatus() { return status; }
     public void setStatus(StatusSolicitacaoTransferencia status) { this.status = status; }
+    public String getJustificativa() { return justificativa; }
+    public void setJustificativa(String justificativa) { this.justificativa = justificativa; }
     public Aluno getRemetente() { return remetente; }
     public void setRemetente(Aluno remetente) { this.remetente = remetente; }
     public Aluno getDestinatario() { return destinatario; }
