@@ -60,3 +60,27 @@ INSERT IGNORE INTO vantagem (id, nome, descricao, foto_url, custo_moedas, ativa,
 
 -- 7. RF-011: amplia a coluna de criterios para 1000 caracteres (ddl-auto=update nao altera colunas existentes)
 ALTER TABLE professor MODIFY criterios_transferencia VARCHAR(1000);
+
+
+-- 8. RF-012: garante que a coluna status aceite CANCELADA (caso tenha sido criada como ENUM antes)
+ALTER TABLE solicitacao_transferencia MODIFY status VARCHAR(20);
+
+-- Colegas para testar solicitacao de transferencia (RF-012)
+-- Alunos 6 e 7 sao da PUC Minas (instituicao 1, mesma do Aluno 4); Aluno 8 e da UFMG (instituicao 2)
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
+VALUES (6, 'mariana.costa@sga.pucminas.br', 'senha123', 'ALUNO');
+INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
+VALUES (6, 'Mariana Costa', '666.666.666-66', 'MG-66.666.666', 'Rua A, 10', 'Engenharia de Software', 1);
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (6, 50, 6);
+
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
+VALUES (7, 'lucas.ferreira@sga.pucminas.br', 'senha123', 'ALUNO');
+INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
+VALUES (7, 'Lucas Ferreira', '777.777.777-77', 'MG-77.777.777', 'Rua B, 20', 'Ciencia da Computacao', 1);
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (7, 20, 7);
+
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
+VALUES (8, 'pedro.almeida@ufmg.br', 'senha123', 'ALUNO');
+INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
+VALUES (8, 'Pedro Almeida', '888.888.888-88', 'MG-88.888.888', 'Av. Antonio Carlos, 6627', 'Sistemas de Informacao', 2);
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (8, 100, 8);
