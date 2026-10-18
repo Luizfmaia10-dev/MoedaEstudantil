@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu de Desenvolvimento - Moeda Estudantil</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <!-- TELA TEMPORÁRIA DE DESENVOLVIMENTO: apague este arquivo quando não for mais necessário. -->
+  <style>
+    :root {
+      --primary: #f59e0b; --primary-deep: #b45309; --subtle: #fef3c7;
+      --border: #fde68a; --bg: #faf8f5; --text: #1f2937; --muted: #6b7280;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: #fff; border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 1.15rem; }
+    .badge { background: var(--subtle); color: var(--primary-deep); border: 1px solid var(--border); font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 9999px; }
+    main { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .panel { background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .panel:last-child { border-right: none; }
+    .panel-head { padding: 20px 20px 16px; border-bottom: 3px solid var(--accent); background: var(--tint); }
+    .panel-head h2 { font-size: 1.1rem; color: var(--accent-deep); }
+    .panel-head p { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+    .aluno { --accent: #f59e0b; --accent-deep: #b45309; --tint: #fffbeb; }
+    .professor { --accent: #3b82f6; --accent-deep: #1d4ed8; --tint: #eff6ff; }
+    .empresa { --accent: #10b981; --accent-deep: #047857; --tint: #ecfdf5; }
+    nav { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+    nav a { display: block; padding: 10px 12px; border-radius: 8px; text-decoration: none; color: var(--text); border-left: 3px solid transparent; transition: background .15s; }
+    nav a:hover { background: var(--tint); border-left-color: var(--accent); }
+    nav a strong { display: block; font-size: .92rem; }
+    nav a span { display: block; font-size: .75rem; color: var(--muted); margin-top: 2px; }
+    nav a.passive { opacity: .75; font-style: italic; }
+    nav a.passive strong::after { content: "passivo"; margin-left: 8px; font-size: .62rem; font-style: normal; background: #f3f4f6; color: var(--muted); padding: 1px 7px; border-radius: 9999px; vertical-align: middle; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Moeda Estudantil — Menu de Desenvolvimento</h1>
+    <span class="badge">TEMPORÁRIO</span>
+  </header>
+
+  <main>
+    <!-- ALUNO -->
+    <section class="panel aluno">
+      <div class="panel-head"><h2>🎓 Aluno</h2><p>Funcionalidades do aluno</p></div>
+      <nav>
+        <a href="index.html"><strong>Autenticação</strong><span>Login e senha</span></a>
+        <a href="index.html"><strong>Cadastro</strong><span>Selecionando uma instituição cadastrada</span></a>
+        <a href="#aluno-resgate"><strong>Resgate de Vantagens</strong><span>Trocar moedas por vantagens das empresas</span></a>
+        <a href="extrato.html?usuarioId=4"><strong>Consulta de Extrato</strong><span>Recebimentos e trocas realizadas</span></a>
+        <a href="#aluno-transferencia"><strong>Transferência de Moedas</strong><span>Solicitar transferência para outro aluno</span></a>
+        <a href="#aluno-notificacoes" class="passive"><strong>Notificações</strong><span>E-mail ao receber moedas ou resgatar vantagem (cupom)</span></a>
+      </nav>
+    </section>
+
+    <!-- PROFESSOR -->
+    <section class="panel professor">
+      <div class="panel-head"><h2>👨‍🏫 Professor</h2><p>Funcionalidades do professor</p></div>
+      <nav>
+        <a href="#prof-login"><strong>Autenticação</strong><span>Login e senha</span></a>
+        <a href="#prof-distribuicao"><strong>Distribuição de Moedas</strong><span>Enviar moedas aos alunos com motivo obrigatório</span></a>
+        <a href="extrato.html?usuarioId=1"><strong>Consulta de Extrato</strong><span>Saldo e histórico de envios</span></a>
+        <a href="#prof-transferencias"><strong>Gestão de Transferências</strong><span>Cadastrar critérios e aprovar/recusar solicitações</span></a>
+        <a href="#prof-saldo" class="passive"><strong>Recebimento de Saldo</strong><span>Carga cumulativa de 1000 moedas por semestre</span></a>
+      </nav>
+    </section>
+
+    <!-- EMPRESA PARCEIRA -->
+    <section class="panel empresa">
+      <div class="panel-head"><h2>🏢 Empresa Parceira</h2><p>Funcionalidades da empresa</p></div>
+      <nav>
+        <a href="empresa.html"><strong>Autenticação</strong><span>Login e senha</span></a>
+        <a href="empresa.html"><strong>Gestão de Vantagens</strong><span>Cadastrar/gerenciar descrição, foto e custo em moedas</span></a>
+        <a href="#empresa-conferencia" class="passive"><strong>Conferência de Trocas</strong><span>E-mail com código de transação a cada troca</span></a>
+      </nav>
+    </section>
+  </main>
+</body>
+</html>
