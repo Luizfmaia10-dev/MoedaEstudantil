@@ -25,6 +25,12 @@ public class SolicitacaoTransferencia {
     @Column(length = 300)
     private String justificativa;
 
+    // Explicacao opcional do professor ao aprovar ou recusar (RF-013)
+    @Column(length = 300)
+    private String observacaoAvaliador;
+
+    private Date dataAvaliacao;
+
     @ManyToOne
     @JoinColumn(name = "remetente_id")
     private Aluno remetente;
@@ -47,6 +53,10 @@ public class SolicitacaoTransferencia {
     public void setStatus(StatusSolicitacaoTransferencia status) { this.status = status; }
     public String getJustificativa() { return justificativa; }
     public void setJustificativa(String justificativa) { this.justificativa = justificativa; }
+    public String getObservacaoAvaliador() { return observacaoAvaliador; }
+    public void setObservacaoAvaliador(String observacaoAvaliador) { this.observacaoAvaliador = observacaoAvaliador; }
+    public Date getDataAvaliacao() { return dataAvaliacao; }
+    public void setDataAvaliacao(Date dataAvaliacao) { this.dataAvaliacao = dataAvaliacao; }
     public Aluno getRemetente() { return remetente; }
     public void setRemetente(Aluno remetente) { this.remetente = remetente; }
     public Aluno getDestinatario() { return destinatario; }
