@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Extrato</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .extrato-card { max-width: 760px; margin: 2rem auto; background: var(--bg-white); border: 1px solid var(--border-yellow); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .extrato-topo { padding: 1.5rem; background: var(--primary-subtle); border-bottom: 1px solid var(--border-yellow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .extrato-topo h1 { font-size: 1.1rem; color: var(--primary-deep); }
+    .extrato-topo small { color: var(--text-muted); }
+    .saldo { text-align: right; }
+    .saldo span { display: block; font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .saldo strong { font-size: 1.9rem; color: var(--primary-deep); }
+    .extrato-filtro { padding: 1rem 1.5rem; display: flex; align-items: center; gap: .75rem; border-bottom: 1px solid var(--border-subtle); }
+    .extrato-filtro select { padding: .4rem .6rem; border: 1px solid var(--border-yellow); border-radius: var(--radius-sm); }
+    #extratoLista { list-style: none; }
+    .extrato-item { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+    .extrato-desc { display: block; font-weight: 500; }
+    .extrato-meta { display: block; font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+    .extrato-valor { font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
+    .extrato-valor.entrada { color: var(--color-success); }
+    .extrato-valor.saida { color: var(--color-danger); }
+    .extrato-msg { padding: 2rem 1.5rem; text-align: center; color: var(--text-muted); }
+    #extratoErro { color: var(--color-danger); background: var(--color-danger-bg); }
+    .extrato-voltar { display: block; max-width: 760px; margin: 0 auto 2rem; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="dev-menu.html" class="brand-wrapper" title="Moeda Estudantil">
+        <div class="brand-logo-container"><img src="assets/logo.svg" alt="Moeda Estudantil" class="brand-logo"></div>
+        <div class="brand-text">
+          <span class="brand-title">Moeda<span>Estudantil</span></span>
+          <span class="brand-subtitle">Extrato da Conta</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <div id="extratoLoading" class="extrato-msg">Carregando extrato...</div>
+    <div id="extratoErro" class="extrato-msg extrato-card" style="display:none;"></div>
+
+    <section id="extratoConteudo" class="extrato-card" style="display:none;">
+      <div class="extrato-topo">
+        <div>
+          <h1 id="titularNome"></h1>
+          <small id="titularTipo"></small>
+        </div>
+        <div class="saldo"><span>Saldo atual (moedas)</span><strong id="saldoAtual">0</strong></div>
+      </div>
+
+      <div class="extrato-filtro">
+        <label for="filtroCategoria">Filtrar por tipo:</label>
+        <select id="filtroCategoria">
+          <option value="">Todas</option>
+          <option value="ENVIO">Envios</option>
+          <option value="RESGATE">Resgates</option>
+          <option value="TRANSFERENCIA">Transferências</option>
+        </select>
+      </div>
+
+      <ul id="extratoLista"></ul>
+      <div id="extratoVazio" class="extrato-msg" style="display:none;">Nenhuma movimentação encontrada.</div>
+    </section>
+  </main>
+
+  <script src="js/extrato-api.js"></script>
+  <script src="js/extrato.js"></script>
+</body>
+</html>
