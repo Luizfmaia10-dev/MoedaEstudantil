@@ -50,7 +50,7 @@ public class DistribuicaoMoedasService {
         var alunos = instituicaoId == null ? java.util.List.<AlunoDistribuicaoDTO>of()
                 : alunoRepository.findByInstituicaoIdOrderByNome(instituicaoId).stream()
                 .map(a -> new AlunoDistribuicaoDTO(a.getId(), a.getNome(), a.getCurso())).toList();
-        return new DistribuicaoContextoDTO(professorId, professor.getNome(), saldo(conta), alunos);
+        return new DistribuicaoContextoDTO(professorId, professor.getNome(), MovimentacaoSaldo.saldo(conta), alunos);
     }
 
     @Transactional
@@ -80,9 +80,8 @@ public class DistribuicaoMoedasService {
         Conta contaAluno = primeiroId.equals(aluno.getId()) ? primeira : segunda;
 
         int quantidade = request.quantidade();
-        if (saldo(contaProfessor) < quantidade) throw erro("Saldo insuficiente para realizar o envio.");
-        contaProfessor.setSaldoCorrente(saldo(contaProfessor) - quantidade);
-        contaAluno.setSaldoCorrente(saldo(contaAluno) + quantidade);
+        MovimentacaoSaldo.transferir(contaProfessor, contaAluno, quantidade,
+                "Saldo insuficiente para realizar o envio.");
         contaRepository.save(contaProfessor);
         contaRepository.save(contaAluno);
 
@@ -90,7 +89,8 @@ public class DistribuicaoMoedasService {
         transacaoRepository.save(novoEnvio(contaProfessor, professor, aluno, quantidade, motivo, TipoTransacao.SAIDA, agora));
         transacaoRepository.save(novoEnvio(contaAluno, professor, aluno, quantidade, motivo, TipoTransacao.ENTRADA, agora));
         notificacaoService.notificarRecebimento(aluno, professor, quantidade, motivo);
-        return new DistribuicaoMoedasResultadoDTO(saldo(contaProfessor), saldo(contaAluno));
+        return new DistribuicaoMoedasResultadoDTO(
+                MovimentacaoSaldo.saldo(contaProfessor), MovimentacaoSaldo.saldo(contaAluno));
     }
 
     private Envio novoEnvio(Conta conta, Professor professor, Aluno aluno, int quantidade,
@@ -109,10 +109,6 @@ public class DistribuicaoMoedasService {
     private Professor buscarProfessor(Long id) {
         return professorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor nao encontrado."));
-    }
-
-    private int saldo(Conta conta) {
-        return conta.getSaldoCorrente() == null ? 0 : conta.getSaldoCorrente();
     }
 
     private ResponseStatusException erro(String mensagem) {
