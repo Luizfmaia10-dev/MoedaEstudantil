@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Distribuir Moedas</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="dev-menu.html" class="brand-wrapper">
+        <div class="brand-logo-container"><img src="assets/logo.svg" alt="" class="brand-logo"></div>
+        <div class="brand-text"><span class="brand-title">Moeda<span>Estudantil</span></span><span class="brand-subtitle">Área do Professor</span></div>
+      </a>
+    </div>
+  </header>
+
+  <main class="feature-shell">
+    <section class="feature-hero">
+      <div><span class="feature-kicker">Reconhecimento estudantil</span><h1>Distribuir moedas</h1><p>Reconheça um aluno informando a quantidade e o motivo da transferência.</p></div>
+      <div class="balance-pill"><span>Saldo disponível</span><strong><span id="saldoProfessor">—</span> moedas</strong></div>
+    </section>
+
+    <div id="estadoPagina" class="feature-status">Carregando dados...</div>
+    <section id="conteudoPagina" class="feature-card" hidden>
+      <form id="formDistribuicao" class="feature-form two-columns" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="alunoId">Aluno <span class="required">*</span></label>
+          <select id="alunoId" class="form-control" required><option value="">Selecione um aluno</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="quantidade">Quantidade <span class="required">*</span></label>
+          <input id="quantidade" class="form-control" type="number" min="1" step="1" required>
+        </div>
+        <div class="form-group span-all">
+          <label class="form-label" for="motivo">Motivo <span class="required">*</span></label>
+          <textarea id="motivo" class="form-control" maxlength="500" placeholder="Descreva por que o aluno está sendo reconhecido" required></textarea>
+        </div>
+        <div id="erroForm" class="feature-status error span-all" hidden></div>
+        <div class="feature-actions span-all"><button type="submit" class="btn-primary">Revisar envio</button></div>
+      </form>
+    </section>
+  </main>
+
+  <div id="modal" class="feature-modal-overlay" aria-hidden="true">
+    <section id="modalPainel" class="feature-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <div class="feature-modal-head"><h2 id="modalTitulo">Confirmar envio</h2><button id="modalFechar" class="btn-close" type="button" aria-label="Fechar">×</button></div>
+      <div id="modalCorpo" class="feature-modal-body"></div>
+      <div class="feature-modal-actions"><button id="modalCancelar" class="btn-secondary" type="button">Cancelar</button><button id="modalConfirmar" class="btn-primary" type="button">Confirmar envio</button></div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="js/modal-gsap.js"></script>
+  <script src="js/distribuicao-api.js"></script>
+  <script src="js/distribuir-moedas.js"></script>
+</body>
+</html>

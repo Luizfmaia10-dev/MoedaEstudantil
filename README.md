@@ -139,6 +139,22 @@ Para executar a suíte de **testes automatizados (JUnit 5 + Mockito)**:
 .\mvnw.cmd test
 ```
 
+### 3.1 Configuração de e-mail
+
+Os requisitos de notificação usam SMTP. Para desenvolvimento, execute um servidor local na porta `1025` (por exemplo, MailHog/Mailpit) ou configure as variáveis abaixo para seu provedor:
+
+```env
+MAIL_HOST=localhost
+MAIL_PORT=1025
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_AUTH=false
+MAIL_STARTTLS=false
+MAIL_FROM=nao-responda@moeda-estudantil.local
+```
+
+Sem um servidor SMTP disponível, operações que exigem notificação por e-mail são recusadas e a movimentação financeira é revertida.
+
 ### 4. Acessando o Frontend
 Com o backend em execução, você pode acessar a interface diretamente pelo navegador (servida pelo próprio Spring Boot) ou abrir a pasta `frontend/` com uma extensão como o *Live Server*:
 

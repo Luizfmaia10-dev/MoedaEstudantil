@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Resgatar Vantagens</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar"><div class="nav-container"><a href="dev-menu.html" class="brand-wrapper"><div class="brand-logo-container"><img src="assets/logo.svg" alt="" class="brand-logo"></div><div class="brand-text"><span class="brand-title">Moeda<span>Estudantil</span></span><span class="brand-subtitle">Área do Aluno</span></div></a></div></header>
+  <main class="feature-shell">
+    <section class="feature-hero"><div><span class="feature-kicker">Catálogo de benefícios</span><h1>Resgatar vantagens</h1><p>Use suas moedas em produtos e descontos das empresas parceiras.</p></div><div class="balance-pill"><span>Seu saldo</span><strong><span id="saldoAluno">—</span> moedas</strong></div></section>
+    <div id="estadoCatalogo" class="feature-status">Carregando vantagens...</div>
+    <ul id="gradeVantagens" class="benefit-grid" hidden></ul>
+  </main>
+
+  <div id="modal" class="feature-modal-overlay" aria-hidden="true">
+    <section id="modalPainel" class="feature-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <div class="feature-modal-head"><h2 id="modalTitulo">Confirmar resgate</h2><button id="modalFechar" class="btn-close" type="button" aria-label="Fechar">×</button></div>
+      <div id="modalCorpo" class="feature-modal-body"></div>
+      <div class="feature-modal-actions"><button id="modalCancelar" class="btn-secondary" type="button">Cancelar</button><button id="modalConfirmar" class="btn-primary" type="button">Confirmar resgate</button></div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="js/modal-gsap.js"></script>
+  <script src="js/resgate-api.js"></script>
+  <script src="js/resgatar-vantagens.js"></script>
+</body>
+</html>

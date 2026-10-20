@@ -14,4 +14,6 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     /** Colegas da mesma instituicao, exceto o proprio aluno. */
     List<Aluno> findByInstituicaoIdAndIdNotOrderByNome(Long instituicaoId, Long id);
+
+    List<Aluno> findByInstituicaoIdOrderByNome(Long instituicaoId);
 }
