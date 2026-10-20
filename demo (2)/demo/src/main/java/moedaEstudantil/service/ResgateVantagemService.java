@@ -44,7 +44,7 @@ public class ResgateVantagemService {
         Conta conta = contaRepository.findByUsuarioId(alunoId)
                 .orElseThrow(() -> erro("O aluno nao possui conta."));
         var itens = vantagemRepository.findAtivas().stream().map(this::item).toList();
-        return new CatalogoVantagemDTO(alunoId, aluno.getNome(), saldo(conta), itens);
+        return new CatalogoVantagemDTO(alunoId, aluno.getNome(), MovimentacaoSaldo.saldo(conta), itens);
     }
 
     @Transactional
@@ -59,9 +59,7 @@ public class ResgateVantagemService {
                 .orElseThrow(() -> erro("O aluno nao possui conta."));
         int custo = vantagem.getCustoMoedas() == null ? 0 : vantagem.getCustoMoedas();
         if (custo <= 0) throw erro("A vantagem possui custo invalido.");
-        if (saldo(conta) < custo) throw erro("Saldo insuficiente para resgatar esta vantagem.");
-
-        conta.setSaldoCorrente(saldo(conta) - custo);
+        MovimentacaoSaldo.debitar(conta, custo, "Saldo insuficiente para resgatar esta vantagem.");
         contaRepository.save(conta);
         String codigo = "CUPOM-" + UUID.randomUUID().toString().replace("-", "")
                 .substring(0, 8).toUpperCase();
@@ -75,7 +73,7 @@ public class ResgateVantagemService {
         resgate.setDataHora(new Date());
         transacaoRepository.save(resgate);
         notificacaoService.notificarResgate(aluno, vantagem, codigo);
-        return new ResgateResultadoDTO(codigo, saldo(conta));
+        return new ResgateResultadoDTO(codigo, MovimentacaoSaldo.saldo(conta));
     }
 
     private CatalogoVantagemDTO.Item item(Vantagem v) {
@@ -86,10 +84,6 @@ public class ResgateVantagemService {
     private Aluno buscarAluno(Long id) {
         return alunoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno nao encontrado."));
-    }
-
-    private int saldo(Conta conta) {
-        return conta.getSaldoCorrente() == null ? 0 : conta.getSaldoCorrente();
     }
 
     private ResponseStatusException erro(String mensagem) {
