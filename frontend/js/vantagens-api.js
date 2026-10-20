@@ -7,16 +7,16 @@ const VANTAGENS_API_ORIGIN = 'http://localhost:8080';
 const VANTAGENS_API_BASE_URL = `${VANTAGENS_API_ORIGIN}/api/empresas`;
 
 class VantagemService {
-  async _tratar(res) {
-    if (res.ok) return res;
-    let msg = 'Não foi possível concluir a operação.';
+  async _request(url, options) {
     try {
-      const corpo = await res.json();
-      if (corpo && corpo.message) msg = corpo.message;
-    } catch { /* corpo sem JSON */ }
-    if (res.status === 404 && msg === 'Não foi possível concluir a operação.') msg = 'Registro não encontrado.';
-    if (res.status === 413) msg = 'A imagem excede o tamanho máximo de 5 MB.';
-    throw new Error(msg);
+      return await AppHttp.request(url, options);
+    } catch (error) {
+      if (error.status === 404 && error.message === 'Não foi possível concluir a operação.') {
+        throw new Error('Registro não encontrado.');
+      }
+      if (error.status === 413) throw new Error('A imagem excede o tamanho máximo de 5 MB.');
+      throw error;
+    }
   }
 
   _formData({ nome, descricao, custoMoedas, foto }) {
@@ -35,28 +35,25 @@ class VantagemService {
   }
 
   async listar(empresaId) {
-    const res = await this._tratar(await fetch(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens`));
-    return res.json();
+    return this._request(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens`);
   }
 
   async criar(empresaId, dados) {
-    const res = await this._tratar(await fetch(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens`, {
+    return this._request(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens`, {
       method: 'POST',
       body: this._formData(dados)
-    }));
-    return res.json();
+    });
   }
 
   async atualizar(empresaId, id, dados) {
-    const res = await this._tratar(await fetch(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens/${id}`, {
+    return this._request(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens/${id}`, {
       method: 'PUT',
       body: this._formData(dados)
-    }));
-    return res.json();
+    });
   }
 
   async remover(empresaId, id) {
-    await this._tratar(await fetch(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens/${id}`, { method: 'DELETE' }));
+    await this._request(`${VANTAGENS_API_BASE_URL}/${empresaId}/vantagens/${id}`, { method: 'DELETE' });
   }
 }
 
