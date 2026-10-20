@@ -7,7 +7,7 @@ function escaparR(texto) { const el = document.createElement('div'); el.textCont
 async function fecharModalR() { await window.modalGsap.fechar($r('modal'), $r('modalPainel')); }
 
 function renderizar() {
-  $r('saldoAluno').textContent = catalogo.saldo.toLocaleString('pt-BR');
+  $r('saldoAluno').textContent = AppFormat.number(catalogo.saldo);
   if (!catalogo.vantagens.length) { $r('estadoCatalogo').textContent = 'Nenhuma vantagem disponível no momento.'; return; }
   $r('estadoCatalogo').hidden = true; $r('gradeVantagens').hidden = false;
   $r('gradeVantagens').innerHTML = catalogo.vantagens.map(v => {

@@ -33,7 +33,7 @@ function abrirSucesso(resultado) {
 async function carregar() {
   if (!professorId) throw new Error('Professor não informado. Use ?professorId=<id>.');
   contexto = await window.distribuicaoApi.contexto(professorId);
-  $d('saldoProfessor').textContent = contexto.saldo.toLocaleString('pt-BR');
+  $d('saldoProfessor').textContent = AppFormat.number(contexto.saldo);
   $d('alunoId').innerHTML += contexto.alunos.map(a => `<option value="${a.id}">${escapar(a.nome)} — ${escapar(a.curso || 'Curso não informado')}</option>`).join('');
   $d('estadoPagina').hidden = true; $d('conteudoPagina').hidden = false;
 }
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $d('modalConfirmar').disabled = true;
     try {
       const resultado = await window.distribuicaoApi.enviar(professorId, envioPendente);
-      contexto.saldo = resultado.saldoProfessor; $d('saldoProfessor').textContent = resultado.saldoProfessor.toLocaleString('pt-BR');
+      contexto.saldo = resultado.saldoProfessor; $d('saldoProfessor').textContent = AppFormat.number(resultado.saldoProfessor);
       await fecharModal(); $d('formDistribuicao').reset(); abrirSucesso(resultado);
     } catch (e) { await fecharModal(); erro(e.message); }
     finally { $d('modalConfirmar').disabled = false; }
