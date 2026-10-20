@@ -6,17 +6,6 @@
 
 const CATEGORIA_ROTULO = { ENVIO: 'Envio', RESGATE: 'Resgate', TRANSFERENCIA: 'Transferência', OUTRO: 'Outro' };
 
-function escapeHtml(texto) {
-  const div = document.createElement('div');
-  div.textContent = texto ?? '';
-  return div.innerHTML;
-}
-
-function formatarData(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-}
-
 function mostrarErro(msg) {
   document.getElementById('extratoLoading').style.display = 'none';
   document.getElementById('extratoConteudo').style.display = 'none';
@@ -32,7 +21,7 @@ function renderizar(extrato) {
 
   document.getElementById('titularNome').textContent = extrato.titularNome;
   document.getElementById('titularTipo').textContent = extrato.titularTipo === 'PROFESSOR' ? 'Professor' : 'Aluno';
-  document.getElementById('saldoAtual').textContent = extrato.saldoAtual.toLocaleString('pt-BR');
+  document.getElementById('saldoAtual').textContent = AppFormat.number(extrato.saldoAtual);
 
   const corpo = document.getElementById('extratoLista');
   const vazio = document.getElementById('extratoVazio');
@@ -49,8 +38,8 @@ function renderizar(extrato) {
     return `
       <li class="extrato-item">
         <div class="extrato-info">
-          <span class="extrato-desc">${escapeHtml(t.descricao)}</span>
-          <span class="extrato-meta">${formatarData(t.dataHora)} · ${escapeHtml(CATEGORIA_ROTULO[t.categoria] || t.categoria)}</span>
+          <span class="extrato-desc">${AppFormat.escapeHtml(t.descricao)}</span>
+          <span class="extrato-meta">${AppFormat.date(t.dataHora) || '—'} · ${AppFormat.escapeHtml(CATEGORIA_ROTULO[t.categoria] || t.categoria)}</span>
         </div>
         <span class="extrato-valor ${entrada ? 'entrada' : 'saida'}">${entrada ? '+' : '−'}${t.quantidade}</span>
       </li>`;

@@ -13,12 +13,6 @@ let editandoId = null; // null = criando
 
 const $ = id => document.getElementById(id);
 
-function escapeHtml(texto) {
-  const div = document.createElement('div');
-  div.textContent = texto ?? '';
-  return div.innerHTML;
-}
-
 function mostrarSomente(estado) {
   $('vantLoading').style.display = estado === 'loading' ? 'block' : 'none';
   $('vantErro').style.display = estado === 'erro' ? 'block' : 'none';
@@ -39,14 +33,14 @@ function renderizar() {
   $('vantLista').innerHTML = vantagens.map(v => {
     const url = window.vantagemService.urlFoto(v.fotoUrl);
     const foto = url
-      ? `<img class="vant-foto" src="${escapeHtml(url)}" alt="${escapeHtml(v.nome)}">`
+      ? `<img class="vant-foto" src="${AppFormat.escapeHtml(url)}" alt="${AppFormat.escapeHtml(v.nome)}">`
       : '<div class="vant-foto">🎁</div>';
     return `
       <li class="vant-card">
         ${foto}
         <div class="vant-corpo">
-          <h3>${escapeHtml(v.nome)}</h3>
-          <p>${escapeHtml(v.descricao)}</p>
+          <h3>${AppFormat.escapeHtml(v.nome)}</h3>
+          <p>${AppFormat.escapeHtml(v.descricao)}</p>
           <span class="vant-custo">${v.custoMoedas} moedas</span>
         </div>
         <div class="vant-acoes">

@@ -7,12 +7,6 @@
 const $ = id => document.getElementById(id);
 let professores = [];
 
-function escapeHtml(texto) {
-  const div = document.createElement('div');
-  div.textContent = texto ?? '';
-  return div.innerHTML;
-}
-
 function erro(err) {
   $('loading').style.display = 'none';
   const el = $('erro');
@@ -30,9 +24,9 @@ function renderizar() {
   $('vazio').style.display = !professores.length ? 'block' : 'none';
   $('lista').innerHTML = filtrados.map(p => `
     <li class="prof-card">
-      <h3>${escapeHtml(p.professorNome)}</h3>
-      <div class="depto">${escapeHtml(p.departamento)}</div>
-      <p>${escapeHtml(p.criterios)}</p>
+      <h3>${AppFormat.escapeHtml(p.professorNome)}</h3>
+      <div class="depto">${AppFormat.escapeHtml(p.departamento)}</div>
+      <p>${AppFormat.escapeHtml(p.criterios)}</p>
     </li>`).join('');
 }
 
