@@ -6,97 +6,60 @@
 const TRANSFERENCIA_API_BASE_URL = 'http://localhost:8080/api';
 
 class TransferenciaService {
-  async _tratar(res) {
-    if (res.ok) return res;
-    let msg = 'Não foi possível concluir a operação.';
-    try {
-      const corpo = await res.json();
-      if (corpo && corpo.message) msg = corpo.message;
-    } catch { /* corpo sem JSON */ }
-    throw new Error(msg);
-  }
-
   /* ---------- Aluno (RF-012) ---------- */
 
   async buscarSaldoDisponivel(alunoId) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/saldo-disponivel`)
-    );
-    return res.json();
+    return AppHttp.request(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/saldo-disponivel`);
   }
 
   async listarColegas(alunoId) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/colegas`)
-    );
-    return res.json();
+    return AppHttp.request(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/colegas`);
   }
 
   async listarProfessoresComCriterios(alunoId) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/criterios-professores`)
-    );
-    return res.json();
+    return AppHttp.request(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/criterios-professores`);
   }
 
   async listarSolicitacoes(alunoId) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/transferencias`)
-    );
-    return res.json();
+    return AppHttp.request(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/transferencias`);
   }
 
   async solicitar(alunoId, { destinatarioId, avaliadorId, quantidade, justificativa }) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/transferencias`, {
+    return AppHttp.request(`${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/transferencias`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ destinatarioId, avaliadorId, quantidade, justificativa })
-      })
-    );
-    return res.json();
+      });
   }
 
   async cancelar(alunoId, solicitacaoId) {
-    const res = await this._tratar(
-      await fetch(
+    return AppHttp.request(
         `${TRANSFERENCIA_API_BASE_URL}/alunos/${encodeURIComponent(alunoId)}/transferencias/${encodeURIComponent(solicitacaoId)}`,
         { method: 'DELETE' }
-      )
     );
-    return res.json();
   }
 
   /* ---------- Professor (RF-013) ---------- */
 
   async listarParaProfessor(professorId, status) {
     const query = status ? `?status=${encodeURIComponent(status)}` : '';
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_API_PROF(professorId)}${query}`)
-    );
-    return res.json();
+    return AppHttp.request(`${TRANSFERENCIA_API_API_PROF(professorId)}${query}`);
   }
 
   async aprovar(professorId, solicitacaoId, observacao) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_API_PROF(professorId)}/${encodeURIComponent(solicitacaoId)}/aprovar`, {
+    return AppHttp.request(`${TRANSFERENCIA_API_API_PROF(professorId)}/${encodeURIComponent(solicitacaoId)}/aprovar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ observacao })
-      })
-    );
-    return res.json();
+      });
   }
 
   async recusar(professorId, solicitacaoId, observacao) {
-    const res = await this._tratar(
-      await fetch(`${TRANSFERENCIA_API_API_PROF(professorId)}/${encodeURIComponent(solicitacaoId)}/recusar`, {
+    return AppHttp.request(`${TRANSFERENCIA_API_API_PROF(professorId)}/${encodeURIComponent(solicitacaoId)}/recusar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ observacao })
-      })
-    );
-    return res.json();
+      });
   }
 }
 
