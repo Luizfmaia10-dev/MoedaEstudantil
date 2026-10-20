@@ -165,6 +165,20 @@ Com o backend em execução, você pode acessar a interface diretamente pelo nav
 * **Portal da Empresa Parceira (Cadastro / Login):**
   `http://localhost:8080/empresa.html`
 
+### 4.1 Desenvolvimento do frontend
+
+Edite somente a pasta `frontend/`, que é a fonte canônica. Antes de executar ou versionar mudanças, replique os arquivos para os recursos estáticos do Spring:
+
+```powershell
+.\scripts\sync-frontend.ps1
+```
+
+Para apenas verificar se as duas árvores estão idênticas:
+
+```powershell
+.\scripts\test-frontend-sync.ps1
+```
+
 ---
 ## 👥 Autores / Disciplina
 
