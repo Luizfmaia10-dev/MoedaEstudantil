@@ -15,7 +15,9 @@ if (-not $sourceRoot.StartsWith($repositoryRoot, [System.StringComparison]::Ordi
 
 function Get-RelativeFileMap([string]$root) {
     $map = @{}
-    Get-ChildItem -LiteralPath $root -File -Recurse | ForEach-Object {
+    Get-ChildItem -LiteralPath $root -File -Recurse |
+        Where-Object { $_.Name -notlike '*.test.js' } |
+        ForEach-Object {
         $relative = $_.FullName.Substring($root.TrimEnd('\').Length).TrimStart('\')
         $map[$relative] = $_.FullName
     }
