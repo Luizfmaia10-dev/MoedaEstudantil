@@ -18,17 +18,6 @@ let alunoId = null;
 let saldoInfo = { saldoCorrente: 0, moedasPendentes: 0, saldoDisponivel: 0 };
 let professores = [];
 
-function escapeHtml(texto) {
-  const div = document.createElement('div');
-  div.textContent = texto ?? '';
-  return div.innerHTML;
-}
-
-function formatarData(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-}
-
 function mostrarErroGeral(err) {
   $('loading').style.display = 'none';
   $('conteudo').style.display = 'none';
@@ -46,8 +35,8 @@ function feedback(msg, tipo) {
 }
 
 function atualizarCabecalhoSaldo() {
-  $('saldoDisponivel').textContent = saldoInfo.saldoDisponivel.toLocaleString('pt-BR');
-  $('saldoPendente').textContent = saldoInfo.moedasPendentes.toLocaleString('pt-BR');
+  $('saldoDisponivel').textContent = AppFormat.number(saldoInfo.saldoDisponivel);
+  $('saldoPendente').textContent = AppFormat.number(saldoInfo.moedasPendentes);
   $('inpQuantidade').max = saldoInfo.saldoDisponivel;
   $('dicaLimite').textContent =
     `Saldo total: ${saldoInfo.saldoCorrente} · Disponível para solicitar: ${saldoInfo.saldoDisponivel} moedas.`;
@@ -56,14 +45,14 @@ function atualizarCabecalhoSaldo() {
 function popularColegas(colegas) {
   const sel = $('selDestinatario');
   sel.innerHTML = '<option value="">Selecione um colega...</option>' +
-    colegas.map(c => `<option value="${c.id}">${escapeHtml(c.nome)} — ${escapeHtml(c.curso || '')}</option>`).join('');
+    colegas.map(c => `<option value="${c.id}">${AppFormat.escapeHtml(c.nome)} — ${AppFormat.escapeHtml(c.curso || '')}</option>`).join('');
 }
 
 function popularProfessores(lista) {
   professores = lista;
   const sel = $('selAvaliador');
   sel.innerHTML = '<option value="">Selecione um professor...</option>' +
-    lista.map(p => `<option value="${p.professorId}">${escapeHtml(p.professorNome)} (${escapeHtml(p.departamento || '')})</option>`).join('');
+    lista.map(p => `<option value="${p.professorId}">${AppFormat.escapeHtml(p.professorNome)} (${AppFormat.escapeHtml(p.departamento || '')})</option>`).join('');
 }
 
 function atualizarCriterioSelecionado() {
@@ -91,10 +80,10 @@ function renderizarSolicitacoes(lista) {
   ul.innerHTML = lista.map(s => {
     const pendente = s.status === 'PENDENTE';
     const just = s.justificativa
-      ? `<div class="sol-just">Sua justificativa: "${escapeHtml(s.justificativa)}"</div>`
+      ? `<div class="sol-just">Sua justificativa: "${AppFormat.escapeHtml(s.justificativa)}"</div>`
       : '';
     const obs = s.observacaoAvaliador
-      ? `<div class="sol-just" style="font-style:normal;color:var(--primary-deep);">Parecer do professor: "${escapeHtml(s.observacaoAvaliador)}"</div>`
+      ? `<div class="sol-just" style="font-style:normal;color:var(--primary-deep);">Parecer do professor: "${AppFormat.escapeHtml(s.observacaoAvaliador)}"</div>`
       : '';
     const botaoCancelar = pendente
       ? `<button type="button" class="btn-cancelar" data-cancelar="${s.id}">Cancelar</button>`
@@ -102,13 +91,13 @@ function renderizarSolicitacoes(lista) {
     return `
       <li class="sol-item">
         <div>
-          <div class="sol-principal">${s.quantidade} moedas para ${escapeHtml(s.destinatarioNome)}</div>
-          <div class="sol-meta">${formatarData(s.dataSolicitacao)} · Avaliador: Prof. ${escapeHtml(s.avaliadorNome)}</div>
+          <div class="sol-principal">${s.quantidade} moedas para ${AppFormat.escapeHtml(s.destinatarioNome)}</div>
+          <div class="sol-meta">${AppFormat.date(s.dataSolicitacao) || '—'} · Avaliador: Prof. ${AppFormat.escapeHtml(s.avaliadorNome)}</div>
           ${just}
           ${obs}
         </div>
         <div class="sol-direita">
-          <span class="badge-status ${escapeHtml(s.status)}">${escapeHtml(STATUS_ROTULO[s.status] || s.status)}</span>
+          <span class="badge-status ${AppFormat.escapeHtml(s.status)}">${AppFormat.escapeHtml(STATUS_ROTULO[s.status] || s.status)}</span>
           ${botaoCancelar}
         </div>
       </li>`;
