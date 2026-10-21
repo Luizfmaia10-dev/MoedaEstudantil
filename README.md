@@ -175,6 +175,17 @@ flowchart LR
 
 Esses registros permanecem no MySQL após reiniciar a aplicação. Cadastros, saldos, extratos, vantagens, solicitações e créditos semestrais são recuperados pelos repositórios quando o usuário volta ao sistema.
 
+### 5.2 Herança e relacionamentos JPA
+
+- `Usuario` utiliza herança `JOINED`: os campos comuns ficam em `usuario`, enquanto `aluno`, `professor` e `empresa_parceira` armazenam os dados específicos usando o mesmo identificador.
+- `TransacaoGeral` utiliza herança `SINGLE_TABLE`: envios, resgates e transferências ficam na tabela `transacao`, diferenciados por `tipo_transacao`.
+- Uma instituição possui vários alunos e professores (`@ManyToOne` no usuário especializado).
+- Cada usuário possui uma conta, e cada conta mantém várias transações.
+- Uma empresa pode cadastrar várias vantagens.
+- Uma solicitação relaciona dois alunos — remetente e destinatário — e um professor avaliador.
+- Cada crédito semestral pertence a um professor. A restrição única por professor, ano e semestre impede crédito duplicado no mesmo período.
+- Vantagens usam exclusão lógica por meio do campo `ativa`, preservando o histórico de resgates.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
