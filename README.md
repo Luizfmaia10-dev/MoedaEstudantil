@@ -109,6 +109,23 @@ No backend, o Model é subdividido para manter as responsabilidades separadas:
 
 O frontend e o backend são distribuídos pela mesma aplicação Spring Boot. As telas chamam endpoints `/api/...` usando `fetch`, e os arquivos estáticos são servidos pelo próprio servidor na porta `8080`.
 
+### 4.1 Fluxo entre as camadas
+
+```mermaid
+flowchart LR
+    U[Usuário] --> V[View<br>HTML, CSS e JavaScript]
+    V -->|HTTP + JSON| C[Controller<br>API REST]
+    C --> S[Service<br>regras de negócio]
+    S --> R[Repository<br>Spring Data JPA]
+    R --> H[Hibernate ORM]
+    H --> DB[(MySQL)]
+    S --> D[DTO de resposta]
+    D --> C
+    C -->|HTTP + JSON| V
+```
+
+Essa organização evita que a interface acesse o banco diretamente. A View conhece somente a API; o Controller conhece os serviços; e os serviços usam os repositórios para consultar ou alterar os dados persistidos.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
