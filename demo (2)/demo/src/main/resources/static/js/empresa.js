@@ -7,7 +7,8 @@
  * 4. Exclusão da própria conta (Delete)
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let currentProfile = null;
   // Seções Principais
   const authSection = document.getElementById('authSection');
   const profileSection = document.getElementById('profileSection');
@@ -29,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const loginEmail = document.getElementById('loginEmail');
   const loginSenha = document.getElementById('loginSenha');
-  const btnQuickLogin = document.getElementById('btnQuickLogin');
 
   // Cartão de Visualização (Read)
   const viewProfileCard = document.getElementById('viewProfileCard');
@@ -56,30 +56,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnConfirmDelete = document.getElementById('btnConfirmDelete');
 
   // Inicialização
-  function init() {
+  async function init() {
     setupCnpjMask(cadCnpj);
     setupCnpjMask(editCnpj);
     setupEvents();
-    checkAuthStatus();
+    await checkAuthStatus();
   }
 
   // Verifica se a empresa já está logada
-  function checkAuthStatus() {
+  async function checkAuthStatus() {
     const empresa = window.empresaAuthService.getEmpresaLogada();
     if (empresa) {
-      renderProfileView(empresa);
+      try {
+        renderProfileView(await window.empresaAuthService.getMeusDados());
+      } catch (err) {
+        renderAuthView();
+        showToast(err.message || 'Erro ao carregar dados da empresa.', 'danger');
+      }
     } else {
       renderAuthView();
     }
   }
 
   function renderAuthView() {
+    currentProfile = null;
     authSection.style.display = 'flex';
     profileSection.style.display = 'none';
     userNavActions.style.display = 'none';
   }
 
   function renderProfileView(empresa) {
+    currentProfile = empresa;
     authSection.style.display = 'none';
     profileSection.style.display = 'flex';
     userNavActions.style.display = 'flex';
@@ -140,29 +147,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const empresa = await window.empresaAuthService.login(email, senha);
         showToast('Login realizado com sucesso!', 'success');
         loginForm.reset();
-        renderProfileView(empresa);
+        window.location.assign(window.AppRoutes.dashboard(empresa));
       } catch (err) {
         showToast(err.message || 'E-mail ou senha incorretos.', 'danger');
       }
     });
 
-    // Atalho de teste
-    if (btnQuickLogin) {
-      btnQuickLogin.addEventListener('click', async () => {
-        try {
-          const empresa = await window.empresaAuthService.login('contato@livrariacampus.com.br', '123');
-          showToast('Logado como Livraria Universitária Campus!', 'success');
-          renderProfileView(empresa);
-        } catch (err) {
-          showToast('Erro no login de teste.', 'danger');
-        }
-      });
-    }
-
     // 3. EDITAR DADOS (UPDATE)
     btnOpenEdit.addEventListener('click', () => {
-      const empresa = window.empresaAuthService.getEmpresaLogada();
-      if (!empresa) return;
+      const empresa = currentProfile;
+      if (!empresa || !window.empresaAuthService.getEmpresaLogada()) return;
 
       editNome.value = empresa.nome || '';
       editCnpj.value = empresa.cnpj || '';
@@ -199,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Dados da empresa atualizados com sucesso!', 'success');
         renderProfileView(atualizada);
       } catch (err) {
-        showToast('Erro ao atualizar dados da empresa.', 'danger');
+        showToast(err.message || 'Erro ao atualizar dados da empresa.', 'danger');
       }
     });
 
@@ -222,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Conta da empresa excluída com sucesso.', 'success');
         renderAuthView();
       } catch (err) {
-        showToast('Erro ao excluir conta.', 'danger');
+        showToast(err.message || 'Erro ao excluir conta.', 'danger');
       }
     });
 
@@ -275,5 +269,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000);
   }
 
-  init();
+  await init();
 });

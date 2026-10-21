@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moeda Estudantil - Área do Aluno</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       BARRA DE NAVEGAÇÃO
+       ======================================================================== -->
+  <header class="navbar">
+    <div class="nav-container">
+      
+      <!-- Logotipo & Nome do Software -->
+      <a href="index.html" class="brand-wrapper" title="Moeda Estudantil">
+        <div class="brand-logo-container">
+          <img src="assets/logo.svg" alt="Símbolo Moeda Estudantil" class="brand-logo">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Moeda<span>Estudantil</span></span>
+          <span class="brand-subtitle">Portal do Aluno</span>
+        </div>
+      </a>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <a href="empresa.html" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; gap: 0.35rem;" title="Ir para o Portal de Empresas Parceiras">
+          🏢 Área da Empresa
+        </a>
+
+        <!-- Ações do Usuário Conectado -->
+        <div id="userNavActions" class="user-nav-actions" style="display: none;">
+          <span class="user-greeting">Olá, <strong id="headerStudentName">Aluno</strong></span>
+          <button type="button" id="btnLogout" class="btn-logout" title="Sair da conta">
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       CONTEÚDO PRINCIPAL
+       ======================================================================== -->
+  <main class="main-wrapper">
+
+    <!-- ====================================================================
+         ESTADO 1: NÃO AUTENTICADO (CADASTRO E LOGIN DO ALUNO)
+         ==================================================================== -->
+    <section id="authSection" class="auth-section">
+      <div class="auth-card">
+
+        <!-- Abas de Alternância: Cadastro x Login -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" id="tabCadastroBtn">
+            Cadastrar-se
+          </button>
+          <button type="button" class="auth-tab-btn" id="tabLoginBtn">
+            Já tenho conta (Entrar)
+          </button>
+        </div>
+
+        <!-- FORMULÁRIO 1: CADASTRO DO ALUNO (CREATE) -->
+        <div id="cadastroContainer">
+          <div class="card-intro">
+            <h2>Criar Conta de Aluno</h2>
+            <p>Preencha os dados abaixo para ingressar no sistema de mérito estudantil.</p>
+          </div>
+
+          <form id="cadastroForm">
+            <div class="form-grid">
+              
+              <!-- Nome Completo -->
+              <div class="form-group full-width">
+                <label for="cadNome" class="form-label">Nome Completo <span class="required">*</span></label>
+                <input type="text" id="cadNome" class="form-control" placeholder="Seu nome completo" required>
+              </div>
+
+              <!-- Email -->
+              <div class="form-group">
+                <label for="cadEmail" class="form-label">E-mail <span class="required">*</span></label>
+                <input type="email" id="cadEmail" class="form-control" placeholder="seu.email@exemplo.com" required>
+              </div>
+
+              <!-- Senha -->
+              <div class="form-group">
+                <label for="cadSenha" class="form-label">Senha <span class="required">*</span></label>
+                <input type="password" id="cadSenha" class="form-control" placeholder="Crie uma senha" required>
+              </div>
+
+              <!-- CPF -->
+              <div class="form-group">
+                <label for="cadCpf" class="form-label">CPF <span class="required">*</span></label>
+                <input type="text" id="cadCpf" class="form-control" placeholder="000.000.000-00" maxlength="14" required>
+              </div>
+
+              <!-- RG -->
+              <div class="form-group">
+                <label for="cadRg" class="form-label">RG <span class="required">*</span></label>
+                <input type="text" id="cadRg" class="form-control" placeholder="MG-00.000.000" maxlength="15" required>
+              </div>
+
+              <!-- Instituição de Ensino (Pré-cadastrada) -->
+              <div class="form-group">
+                <label for="cadInstituicao" class="form-label">Instituição de Ensino <span class="required">*</span></label>
+                <select id="cadInstituicao" class="form-control" required>
+                  <option value="" disabled selected>Selecione sua instituição...</option>
+                </select>
+              </div>
+
+              <!-- Curso -->
+              <div class="form-group">
+                <label for="cadCurso" class="form-label">Curso <span class="required">*</span></label>
+                <input type="text" id="cadCurso" class="form-control" placeholder="Ex: Engenharia de Software" required>
+              </div>
+
+              <!-- Endereço -->
+              <div class="form-group full-width">
+                <label for="cadEndereco" class="form-label">Endereço <span class="required">*</span></label>
+                <input type="text" id="cadEndereco" class="form-control" placeholder="Rua, número, complemento, bairro, cidade - UF" required>
+              </div>
+
+            </div>
+
+            <button type="submit" class="btn-primary full-width-btn" style="margin-top: 1.5rem;">
+              Concluir Cadastro
+            </button>
+          </form>
+        </div>
+
+        <!-- FORMULÁRIO 2: LOGIN DO ALUNO -->
+        <div id="loginContainer" style="display: none;">
+          <div class="card-intro">
+            <h2>Acessar Minha Conta</h2>
+            <p>Entre com seu e-mail e senha cadastrados.</p>
+          </div>
+
+          <form id="loginForm">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="loginEmail" class="form-label">E-mail</label>
+              <input type="email" id="loginEmail" class="form-control" placeholder="seu.email@exemplo.com" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label for="loginSenha" class="form-label">Senha</label>
+              <input type="password" id="loginSenha" class="form-control" placeholder="Sua senha" required>
+            </div>
+
+            <button type="submit" class="btn-primary full-width-btn">
+              Entrar
+            </button>
+
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ESTADO 2: AUTENTICADO (VISUALIZAR, EDITAR DADOS E EXCLUIR CONTA)
+         ==================================================================== -->
+    <section id="profileSection" class="profile-section" style="display: none;">
+      
+      <!-- CARTÃO 1: VISUALIZAÇÃO DOS MEUS DADOS (READ) -->
+      <div id="viewProfileCard" class="profile-card">
+        
+        <div class="profile-card-header">
+          <div class="profile-header-title">
+            <div class="profile-coin-icon">
+              <img src="assets/logo.svg" alt="Moeda Estudantil">
+            </div>
+            <div>
+              <h2>Meus Dados Cadastrais</h2>
+              <p>Consulte e gerencie suas informações no sistema de mérito.</p>
+            </div>
+          </div>
+
+          <button type="button" id="btnOpenEdit" class="btn-secondary">
+            ✏️ Editar Meus Dados
+          </button>
+        </div>
+
+        <!-- Detalhes do Aluno -->
+        <div class="profile-details-grid">
+          <div class="profile-detail-item full-width">
+            <span class="detail-label">Nome Completo</span>
+            <span class="detail-value" id="viewNome">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">E-mail</span>
+            <span class="detail-value" id="viewEmail">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">Instituição de Ensino</span>
+            <span class="detail-value highlight-badge" id="viewInstituicao">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">Curso</span>
+            <span class="detail-value" id="viewCurso">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">CPF</span>
+            <span class="detail-value" id="viewCpf">-</span>
+          </div>
+
+          <div class="profile-detail-item">
+            <span class="detail-label">RG</span>
+            <span class="detail-value" id="viewRg">-</span>
+          </div>
+
+          <div class="profile-detail-item full-width">
+            <span class="detail-label">Endereço</span>
+            <span class="detail-value" id="viewEndereco">-</span>
+          </div>
+        </div>
+
+        <!-- Área de Exclusão da Conta (DELETE) -->
+        <div class="danger-zone">
+          <div>
+            <strong>Excluir Conta</strong>
+            <p>Se desejar, você pode encerrar e excluir seu cadastro do sistema.</p>
+          </div>
+          <button type="button" id="btnOpenDeleteModal" class="btn-danger">
+            Excluir Minha Conta
+          </button>
+        </div>
+
+      </div>
+
+      <!-- CARTÃO 2: EDIÇÃO DOS MEUS DADOS (UPDATE) -->
+      <div id="editProfileCard" class="profile-card" style="display: none;">
+        
+        <div class="profile-card-header">
+          <div>
+            <h2>Editar Meus Dados</h2>
+            <p>Atualize suas informações pessoais e acadêmicas.</p>
+          </div>
+          <button type="button" id="btnCancelEdit" class="btn-secondary">
+            Cancelar
+          </button>
+        </div>
+
+        <form id="editForm">
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label for="editNome" class="form-label">Nome Completo <span class="required">*</span></label>
+              <input type="text" id="editNome" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="editEmail" class="form-label">E-mail <span class="required">*</span></label>
+              <input type="email" id="editEmail" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="editSenha" class="form-label">Nova Senha (opcional)</label>
+              <input type="password" id="editSenha" class="form-control" placeholder="Deixe em branco para não alterar">
+            </div>
+
+            <div class="form-group">
+              <label for="editCpf" class="form-label">CPF <span class="required">*</span></label>
+              <input type="text" id="editCpf" class="form-control" maxlength="14" required>
+            </div>
+
+            <div class="form-group">
+              <label for="editRg" class="form-label">RG <span class="required">*</span></label>
+              <input type="text" id="editRg" class="form-control" maxlength="15" required>
+            </div>
+
+            <div class="form-group">
+              <label for="editInstituicao" class="form-label">Instituição de Ensino <span class="required">*</span></label>
+              <select id="editInstituicao" class="form-control" required></select>
+            </div>
+
+            <div class="form-group">
+              <label for="editCurso" class="form-label">Curso <span class="required">*</span></label>
+              <input type="text" id="editCurso" class="form-control" required>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="editEndereco" class="form-label">Endereço <span class="required">*</span></label>
+              <input type="text" id="editEndereco" class="form-control" required>
+            </div>
+
+          </div>
+
+          <div class="card-footer-actions">
+            <button type="button" id="btnCancelEditBottom" class="btn-secondary">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       MODAL DE CONFIRMAÇÃO DE EXCLUSÃO DE CONTA (DELETE)
+       ======================================================================== -->
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 style="color: #b45309; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚠️</span> Confirmar Exclusão
+        </h3>
+        <button type="button" class="btn-close" id="btnCloseDeleteModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="margin-bottom: 0.5rem; color: var(--text-main);">
+          Tem certeza de que deseja <strong>excluir sua conta</strong> de aluno?
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Esta ação apagará permanentemente o seu cadastro no Sistema de Moeda Estudantil.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnCancelDelete">Cancelar</button>
+        <button type="button" class="btn-danger" id="btnConfirmDelete">
+          Sim, Excluir Minha Conta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Toasts / Avisos -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Rodapé Simples -->
+  <footer class="footer">
+    <p>Sistema de Moeda Estudantil &bull; Laboratório de Desenvolvimento de Software &bull; PUC Minas</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/core/http.js"></script>
+  <script src="js/core/session.js"></script>
+  <script src="js/core/routes.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/auth-api.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

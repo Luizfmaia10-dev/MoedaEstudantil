@@ -158,12 +158,22 @@ Sem um servidor SMTP disponível, operações que exigem notificação por e-mai
 ### 4. Acessando o Frontend
 Com o backend em execução, você pode acessar a interface diretamente pelo navegador (servida pelo próprio Spring Boot) ou abrir a pasta `frontend/` com uma extensão como o *Live Server*:
 
-* **Menu Central de Desenvolvimento (todas as funcionalidades por perfil):**
-  `http://localhost:8080/dev-menu.html`
-* **Portal do Aluno (Cadastro / Login):**
-  `http://localhost:8080/index.html`
-* **Portal da Empresa Parceira (Cadastro / Login):**
-  `http://localhost:8080/empresa.html`
+* **Landing e acesso por perfil:** `http://localhost:8080/index.html`
+* **Painel após autenticação:** `http://localhost:8080/painel.html`
+* **Cadastro e perfil do aluno:** `http://localhost:8080/aluno.html`
+* **Cadastro e perfil da empresa:** `http://localhost:8080/empresa.html`
+
+Contas de demonstração persistidas:
+
+| Perfil | E-mail | Senha |
+| --- | --- | --- |
+| Aluno | `aluno.teste@sga.pucminas.br` | `senha123` |
+| Professor | `glender.bras@pucminas.br` | `senha123` |
+| Empresa | `contato@cantinadapuc.com.br` | `senha123` |
+
+O primeiro login válido migra automaticamente senhas legadas em texto simples para BCrypt.
+
+O login valida credenciais persistidas pela API; o navegador mantém apenas os dados mínimos da sessão atual em `sessionStorage`. Professores são pré-cadastrados, e o cadastro público está disponível somente para aluno e empresa. A autorização completa de todas as APIs por identidade autenticada permanece fora do escopo desta entrega.
 
 ### 4.1 Desenvolvimento do frontend
 
