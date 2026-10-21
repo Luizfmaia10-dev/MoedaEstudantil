@@ -41,7 +41,7 @@ class AutenticacaoServiceTest {
         aluno.setSenha(senhas.codificar("segredo"));
         when(alunos.findByEmailIgnoreCase("ana@puc.br")).thenReturn(Optional.of(aluno));
 
-        UsuarioAutenticadoDTO resultado = service.autenticar(" ANA@PUC.BR ", "segredo");
+        UsuarioAutenticadoDTO resultado = service.autenticar(" ANA@PUC.BR ", "segredo", "ALUNO");
 
         assertEquals(7L, resultado.id());
         assertEquals("Ana", resultado.nome());
@@ -57,7 +57,7 @@ class AutenticacaoServiceTest {
         when(alunos.findByEmailIgnoreCase("paulo@puc.br")).thenReturn(Optional.empty());
         when(professores.findByEmailIgnoreCase("paulo@puc.br")).thenReturn(Optional.of(professor));
 
-        UsuarioAutenticadoDTO resultado = service.autenticar("paulo@puc.br", "senha123");
+        UsuarioAutenticadoDTO resultado = service.autenticar("paulo@puc.br", "senha123", "PROFESSOR");
 
         assertEquals("PROFESSOR", resultado.perfil());
         assertTrue(senhas.estaCodificada(professor.getSenha()));
@@ -74,8 +74,17 @@ class AutenticacaoServiceTest {
         when(professores.findByEmailIgnoreCase("loja@exemplo.com")).thenReturn(Optional.empty());
         when(empresas.findByEmailIgnoreCase("loja@exemplo.com")).thenReturn(Optional.of(empresa));
 
-        assertEquals("EMPRESA", service.autenticar("loja@exemplo.com", "correta").perfil());
+        assertEquals("EMPRESA", service.autenticar("loja@exemplo.com", "correta", "EMPRESA").perfil());
         assertThrows(ResponseStatusException.class,
-                () -> service.autenticar("loja@exemplo.com", "incorreta"));
+                () -> service.autenticar("loja@exemplo.com", "incorreta", "EMPRESA"));
+    }
+
+    @Test
+    void rejeitaUsuarioQuandoPerfilSelecionadoNaoCorresponde() {
+        when(professores.findByEmailIgnoreCase("ana@puc.br")).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class,
+                () -> service.autenticar("ana@puc.br", "segredo", "PROFESSOR"));
+        verify(alunos, never()).findByEmailIgnoreCase(anyString());
     }
 }

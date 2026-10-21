@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Locale;
-import java.util.Optional;
 
 @Service
 public class AutenticacaoService {
@@ -32,19 +31,18 @@ public class AutenticacaoService {
     }
 
     @Transactional
-    public UsuarioAutenticadoDTO autenticar(String email, String senha) {
+    public UsuarioAutenticadoDTO autenticar(String email, String senha, String perfil) {
         String normalizado = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
-
-        Optional<Aluno> aluno = alunos.findByEmailIgnoreCase(normalizado);
-        if (aluno.isPresent()) return validarAluno(aluno.get(), senha);
-
-        Optional<Professor> professor = professores.findByEmailIgnoreCase(normalizado);
-        if (professor.isPresent()) return validarProfessor(professor.get(), senha);
-
-        Optional<EmpresaParceira> empresa = empresas.findByEmailIgnoreCase(normalizado);
-        if (empresa.isPresent()) return validarEmpresa(empresa.get(), senha);
-
-        throw credenciaisInvalidas();
+        String perfilNormalizado = perfil == null ? "" : perfil.trim().toUpperCase(Locale.ROOT);
+        return switch (perfilNormalizado) {
+            case "ALUNO" -> alunos.findByEmailIgnoreCase(normalizado)
+                    .map(usuario -> validarAluno(usuario, senha)).orElseThrow(this::credenciaisInvalidas);
+            case "PROFESSOR" -> professores.findByEmailIgnoreCase(normalizado)
+                    .map(usuario -> validarProfessor(usuario, senha)).orElseThrow(this::credenciaisInvalidas);
+            case "EMPRESA" -> empresas.findByEmailIgnoreCase(normalizado)
+                    .map(usuario -> validarEmpresa(usuario, senha)).orElseThrow(this::credenciaisInvalidas);
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Perfil inválido.");
+        };
     }
 
     private UsuarioAutenticadoDTO validarAluno(Aluno usuario, String senha) {

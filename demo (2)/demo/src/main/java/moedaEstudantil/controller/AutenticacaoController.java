@@ -18,6 +18,6 @@ public class AutenticacaoController {
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioAutenticadoDTO> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(service.autenticar(request.email(), request.senha()));
+        return ResponseEntity.ok(service.autenticar(request.email(), request.senha(), request.perfil()));
     }
 }
