@@ -130,6 +130,7 @@ p { max-width: 60ch; }
 .faq-item button[aria-expanded="true"] span { transform: rotate(45deg); }
 .faq-item [role="region"] { padding: 0 1.5rem 1.5rem 0; color: var(--charcoal); }
 .site-footer { background: var(--lime); color: var(--forest); padding: 2.5rem max(1.5rem, calc((100vw - var(--page)) / 2)); }
+.site-footer :focus-visible { outline-color: var(--forest); }
 .footer-brand { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 2.75rem; font-size: clamp(1.75rem, 5.5vw, 4.5rem); font-weight: 850; letter-spacing: -.06em; line-height: 1.1; }
 .site-footer > div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgb(22 51 0 / .25); }
 .site-footer > div a { display: inline-flex; min-height: 2.75rem; align-items: center; }
