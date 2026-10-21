@@ -27,6 +27,7 @@
 
     function selectProfile(perfil) {
       if (pending) return;
+      if (perfil !== state.perfil) password.value = '';
       state = createLoginState(perfil);
       title.textContent = `Entre como ${state.label.toLocaleLowerCase('pt-BR')}`;
       profiles.forEach(button => button.setAttribute('aria-pressed', button.dataset.profile === state.perfil));

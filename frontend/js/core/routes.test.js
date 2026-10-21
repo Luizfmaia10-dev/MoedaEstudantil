@@ -11,7 +11,8 @@ test('cardsFor entrega somente ações do aluno com seu id', () => {
     'resgatar-vantagens.html?alunoId=4',
     'extrato.html?usuarioId=4',
     'solicitar-transferencia.html?alunoId=4',
-    'criterios-transferencia.html?alunoId=4'
+    'criterios-transferencia.html?alunoId=4',
+    'aluno.html'
   ]);
 });
 
@@ -26,7 +27,8 @@ test('cardsFor entrega somente ações do professor com seu id', () => {
 
 test('cardsFor entrega somente ações da empresa com seu id', () => {
   assert.deepEqual(cardsFor({ id: 5, perfil: 'EMPRESA' }).map(card => card.href), [
-    'vantagens.html?empresaId=5'
+    'vantagens.html?empresaId=5',
+    'empresa.html'
   ]);
 });
 

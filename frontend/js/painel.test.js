@@ -21,11 +21,15 @@ test('aluno e empresa recebem apenas suas ações e nome vazio usa o perfil', ()
   const student = buildDashboardModel({ id: 2, nome: '', perfil: 'ALUNO' }, cardsFor);
   const company = buildDashboardModel({ id: 3, nome: 'Café Escola', perfil: 'EMPRESA' }, cardsFor);
   assert.equal(student.firstName, 'Aluno');
-  assert.equal(student.cards.length, 4);
+  assert.equal(student.cards.length, 5);
   assert.equal(student.cards[0].href, 'resgatar-vantagens.html?alunoId=2');
   assert.equal(company.profileLabel, 'Empresa parceira');
-  assert.equal(company.cards.length, 1);
+  assert.equal(student.cards[4].href, 'aluno.html');
+  assert.equal(company.cards.length, 2);
   assert.equal(company.cards[0].href, 'vantagens.html?empresaId=3');
+  assert.equal(company.cards[1].href, 'empresa.html');
+  assert.ok(student.cards.every(card => !card.href.includes('empresa')));
+  assert.ok(company.cards.every(card => !card.href.includes('aluno')));
 });
 
 function documentFixture() {
@@ -59,9 +63,11 @@ test('renderiza dados como texto, ignora perfil da URL e logout encerra sessão'
   assert.equal(document.nodes.dashboardTitle.textContent, 'Olá, <img!');
   assert.equal(document.nodes.profileLabel.textContent, 'Empresa parceira');
   const cards = document.nodes.actionGrid.children;
-  assert.equal(cards.length, 1);
+  assert.equal(cards.length, 2);
   assert.equal(cards[0].attributes.href, 'vantagens.html?empresaId=3');
   assert.ok(cards[0].children.some(child => child.textContent === 'Gestão de Vantagens'));
+  assert.equal(cards[1].attributes.href, 'empresa.html');
+  assert.ok(cards[1].children.some(child => /perfil|conta/i.test(child.textContent)));
   document.nodes.logoutButton.click();
   assert.equal(cleared, true);
   assert.equal(location.href, 'index.html');

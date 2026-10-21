@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,8 +33,8 @@ public class AutenticacaoController {
         return ResponseEntity.status(erro.getStatusCode()).body(Map.of("message", erro.getReason()));
     }
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Map<String, String>> persistenciaIndisponivel(DataAccessException erro) {
+    @ExceptionHandler({DataAccessException.class, CannotCreateTransactionException.class})
+    public ResponseEntity<Map<String, String>> persistenciaIndisponivel(RuntimeException erro) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(Map.of("message", "Serviço temporariamente indisponível."));
     }

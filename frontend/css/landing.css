@@ -21,8 +21,8 @@ button, a { touch-action: manipulation; }
 button { cursor: pointer; }
 a { color: inherit; text-decoration: none; }
 button:disabled { cursor: wait; opacity: .65; }
-:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
-.button--primary:focus-visible, .profile-switcher button:focus-visible, input:focus-visible, .audience-section :focus-visible { outline-color: var(--spruce); }
+:focus-visible { outline: 3px solid var(--spruce); outline-offset: 3px; }
+.community-strip :focus-visible, .partner-section :focus-visible { outline-color: var(--lime); }
 [hidden] { display: none !important; }
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { text-wrap: balance; }

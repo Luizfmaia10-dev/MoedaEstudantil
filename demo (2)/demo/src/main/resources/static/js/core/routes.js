@@ -4,7 +4,8 @@
       { title: 'Resgate de Vantagens', description: 'Troque moedas por vantagens das empresas parceiras.', eyebrow: 'ALUNO', href: id => `resgatar-vantagens.html?alunoId=${id}` },
       { title: 'Consulta de Extrato', description: 'Consulte recebimentos e trocas realizadas.', eyebrow: 'ALUNO', href: id => `extrato.html?usuarioId=${id}` },
       { title: 'Transferência de Moedas', description: 'Solicite transferência de moedas para outro aluno.', eyebrow: 'ALUNO', href: id => `solicitar-transferencia.html?alunoId=${id}` },
-      { title: 'Critérios de Transferência', description: 'Consulte os critérios definidos pelos professores.', eyebrow: 'ALUNO', href: id => `criterios-transferencia.html?alunoId=${id}` }
+      { title: 'Critérios de Transferência', description: 'Consulte os critérios definidos pelos professores.', eyebrow: 'ALUNO', href: id => `criterios-transferencia.html?alunoId=${id}` },
+      { title: 'Minha Conta', description: 'Consulte, edite seus dados cadastrais ou exclua sua conta.', eyebrow: 'ALUNO', href: () => 'aluno.html' }
     ],
     PROFESSOR: [
       { title: 'Distribuição de Moedas', description: 'Envie moedas aos alunos com um motivo.', eyebrow: 'PROFESSOR', href: id => `distribuir-moedas.html?professorId=${id}` },
@@ -13,7 +14,8 @@
       { title: 'Gestão de Transferências', description: 'Avalie solicitações de transferência.', eyebrow: 'PROFESSOR', href: id => `avaliar-transferencias.html?professorId=${id}` }
     ],
     EMPRESA: [
-      { title: 'Gestão de Vantagens', description: 'Cadastre e gerencie as vantagens oferecidas.', eyebrow: 'EMPRESA', href: id => `vantagens.html?empresaId=${id}` }
+      { title: 'Gestão de Vantagens', description: 'Cadastre e gerencie as vantagens oferecidas.', eyebrow: 'EMPRESA', href: id => `vantagens.html?empresaId=${id}` },
+      { title: 'Perfil da Empresa', description: 'Consulte, edite os dados da empresa ou exclua sua conta.', eyebrow: 'EMPRESA', href: () => 'empresa.html' }
     ]
   };
 

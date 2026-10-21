@@ -10,11 +10,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.MediaType;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -48,7 +55,7 @@ class AutenticacaoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
                         {"id":4,"nome":"Aluno Teste","email":"aluno@puc.br","perfil":"ALUNO"}
-                        """))
+                        """, JsonCompareMode.STRICT))
                 .andExpect(jsonPath("$.senha").doesNotExist())
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
@@ -88,7 +95,32 @@ class AutenticacaoControllerTest {
                                 {"email":"aluno@puc.br","senha":"senha123","perfil":"ALUNO"}
                                 """))
                 .andExpect(status().isServiceUnavailable())
-                .andExpect(content().json("{\"message\":\"Serviço temporariamente indisponível.\"}"));
+                .andExpect(content().json("{\"message\":\"Serviço temporariamente indisponível.\"}", JsonCompareMode.STRICT));
+    }
+
+    @Test
+    void devolve503GenericoQuandoAberturaDaTransacaoFalhaAntesDaConsulta() throws Exception {
+        PlatformTransactionManager transactions = mock(PlatformTransactionManager.class);
+        when(transactions.getTransaction(any())).thenThrow(new CannotCreateTransactionException(
+                "Falha em jdbc:mysql://servidor-interno:3306/banco",
+                new SQLException("Acesso negado para usuario-interno; senha=segredo")));
+        AutenticacaoService service = new AutenticacaoService(alunos,
+                mock(ProfessorRepository.class), mock(EmpresaParceiraRepository.class), new SenhaService());
+        TransactionInterceptor interceptor = new TransactionInterceptor();
+        interceptor.setTransactionManager(transactions);
+        interceptor.setTransactionAttributeSource(new AnnotationTransactionAttributeSource());
+        ProxyFactory factory = new ProxyFactory(service);
+        factory.addAdvice(interceptor);
+        mvc = MockMvcBuilders.standaloneSetup(
+                new AutenticacaoController((AutenticacaoService) factory.getProxy())).build();
+
+        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"email":"aluno@puc.br","senha":"senha123","perfil":"ALUNO"}
+                                """))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(content().json("{\"message\":\"Serviço temporariamente indisponível.\"}", JsonCompareMode.STRICT));
+        verifyNoInteractions(alunos);
     }
 
     @ParameterizedTest
@@ -96,7 +128,7 @@ class AutenticacaoControllerTest {
     void devolve400SemDetalhesInternosParaCorpoAusenteOuJsonMalformado(String request) throws Exception {
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("{\"message\":\"Informe e-mail, senha e perfil.\"}"));
+                .andExpect(content().json("{\"message\":\"Informe e-mail, senha e perfil.\"}", JsonCompareMode.STRICT));
         verifyNoInteractions(alunos);
     }
 }
