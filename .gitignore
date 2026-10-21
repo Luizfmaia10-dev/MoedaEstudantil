@@ -1,1 +1,4 @@
 .worktrees/
+tmp/
+output/pdf/*_atualizado.pdf
+output/pdf/*_corrigido.pdf
