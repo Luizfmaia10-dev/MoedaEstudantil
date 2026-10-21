@@ -203,6 +203,20 @@ Consultas que não modificam dados utilizam `@Transactional(readOnly = true)`. S
 
 > Limitação atual: a interface usa a identidade mínima da sessão para montar rotas, mas a autorização completa de todos os endpoints por token ou sessão autenticada no servidor ainda está fora do escopo desta entrega.
 
+## 6. Resumo para apresentação
+
+Uma divisão objetiva para os slides é:
+
+1. **Arquitetura:** “O sistema utiliza MVC em camadas. A View é o frontend; os Controllers expõem a API REST; e o Model reúne DTOs, Services, entidades e Repositories.”
+2. **Fluxo MVC:** apresente o resgate de vantagem: botão na View → requisição HTTP → Controller → Service → Repository → MySQL → DTO de resposta.
+3. **Persistência:** “Usamos JPA/Hibernate como ORM, Spring Data JPA para os repositórios e MySQL para armazenamento definitivo. H2 é utilizado somente em testes.”
+4. **Dados:** destaque usuários e perfis, instituições, contas e saldos, vantagens, transações, solicitações e créditos semestrais.
+5. **Consistência:** explique que `@Transactional` evita gravações parciais e que o bloqueio pessimista protege o saldo contra alterações concorrentes.
+
+Frase de encerramento sugerida:
+
+> A interface nunca acessa o banco diretamente. Cada requisição passa pelo Controller, pelas regras do Service e pelos Repositories; o Hibernate transforma essas operações em SQL e o MySQL mantém os dados do sistema.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
