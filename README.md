@@ -90,12 +90,24 @@ Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de
 * Veja o [**diagrama de entidade e relacionamento**](Artefatos/diagramaER.md)
 
 ---
-## 🛠️ Tecnologias e Arquitetura
+## 4. Arquitetura do sistema
 
-* **Padrão de Projeto / Arquitetura:** Arquitetura MVC.
-* **Persistência de Dados:** Estratégia de acesso ao banco de dados utilizando abordagens como ORM ou Padrão DAO.
-* **Estrutura:** Separação entre front-end e back-end para as operações de comunicação e CRUDs.
-* **Controle de Versão:** Utilização de repositório GitHub para controle do código e modelos UML.
+O sistema segue uma arquitetura em camadas baseada em **MVC (Model–View–Controller)**. Cada camada possui uma responsabilidade definida e depende apenas das camadas necessárias ao fluxo.
+
+| Camada MVC | Implementação no sistema | Responsabilidade |
+| --- | --- | --- |
+| **View** | HTML, CSS e JavaScript em `frontend/` | Apresentar as telas, capturar ações do usuário e consumir a API REST. |
+| **Controller** | Classes em `moedaEstudantil.controller` | Receber requisições HTTP, validar parâmetros básicos, chamar os serviços e devolver DTOs e códigos HTTP. |
+| **Model** | Entidades, DTOs, serviços e repositórios | Representar o domínio, executar regras de negócio e persistir os dados. |
+
+No backend, o Model é subdividido para manter as responsabilidades separadas:
+
+- **DTOs:** definem os dados de entrada e saída da API sem expor diretamente as entidades.
+- **Services:** concentram regras como autenticação, distribuição de moedas, resgate e transferência.
+- **Entities:** representam os objetos persistidos e seus relacionamentos JPA.
+- **Repositories:** abstraem consultas e operações de banco com Spring Data JPA.
+
+O frontend e o backend são distribuídos pela mesma aplicação Spring Boot. As telas chamam endpoints `/api/...` usando `fetch`, e os arquivos estáticos são servidos pelo próprio servidor na porta `8080`.
 
 ---
 ## 🚀 Como Rodar a Aplicação
