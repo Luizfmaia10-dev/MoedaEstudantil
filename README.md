@@ -5,6 +5,18 @@ Projeto desenvolvido para a disciplina de **Laboratório de Desenvolvimento de S
 O sistema tem o objetivo de estimular o reconhecimento do mérito estudantil através de uma moeda virtual, que pode ser distribuída por professores aos alunos e trocada por produtos e descontos em empresas parceiras.
 
 ---
+
+## Sumário
+
+- [1. Requisitos do sistema](#1-requisitos-do-sistema)
+- [2. Histórias de Usuário](#2-histórias-de-usuário-user-stories)
+- [3. Modelagem e Diagramas UML](#3-modelagem-e-diagramas-uml)
+- [4. Arquitetura do sistema](#4-arquitetura-do-sistema)
+- [5. Camada de persistência](#5-camada-de-persistência)
+- [6. Resumo para apresentação](#6-resumo-para-apresentação)
+- [Como rodar a aplicação](#-como-rodar-a-aplicação)
+- [Autores e disciplina](#-autores--disciplina)
+
 ## 1. Requisitos do sistema
 
 ### 1.1 Requisitos funcionais (RF):
