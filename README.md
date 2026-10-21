@@ -186,6 +186,14 @@ Esses registros permanecem no MySQL após reiniciar a aplicação. Cadastros, sa
 - Cada crédito semestral pertence a um professor. A restrição única por professor, ano e semestre impede crédito duplicado no mesmo período.
 - Vantagens usam exclusão lógica por meio do campo `ativa`, preservando o histórico de resgates.
 
+### 5.3 Consistência e transações
+
+As operações que alteram mais de um registro são executadas em métodos `@Transactional`. Distribuição, resgate, transferência e crédito semestral são confirmados como uma unidade: se uma etapa lança erro, a transação é revertida e o banco não fica parcialmente atualizado.
+
+Operações monetárias consultam contas com bloqueio pessimista (`PESSIMISTIC_WRITE`, equivalente a `SELECT ... FOR UPDATE`). Isso serializa alterações concorrentes no mesmo saldo e reduz o risco de duas requisições gastarem as mesmas moedas.
+
+Consultas que não modificam dados utilizam `@Transactional(readOnly = true)`. Senhas novas são armazenadas com BCrypt; credenciais legadas da carga inicial são migradas para BCrypt após o primeiro login válido.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
