@@ -29,6 +29,14 @@ INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (1, 1000, 1);
 INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (2, 1000, 2);
 INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (3, 1000, 3);
 
+-- A carga inicial representa o segundo semestre de 2026 e não deve ser reaplicada.
+INSERT IGNORE INTO credito_semestral_professor
+    (id, professor_id, ano, semestre, quantidade, data_credito)
+VALUES
+    (1, 1, 2026, 2, 1000, '2026-07-01 00:00:00'),
+    (2, 2, 2026, 2, 1000, '2026-07-01 00:00:00'),
+    (3, 3, 2026, 2, 1000, '2026-07-01 00:00:00');
+
 -- 5. Carga de exemplo para testar o extrato (RF-006)
 -- Aluno de teste: usuario_id 4 / conta 4. Professor Glender: usuario_id 1 / conta 1.
 INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
