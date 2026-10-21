@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     Optional<Aluno> findByCpf(String cpf);
     Optional<Aluno> findByEmail(String email);
+    Optional<Aluno> findByEmailIgnoreCase(String email);
 
     /** Colegas da mesma instituicao, exceto o proprio aluno. */
     List<Aluno> findByInstituicaoIdAndIdNotOrderByNome(Long instituicaoId, Long id);
