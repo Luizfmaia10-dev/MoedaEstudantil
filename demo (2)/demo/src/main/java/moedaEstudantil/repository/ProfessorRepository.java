@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     Optional<Professor> findByEmailIgnoreCase(String email);
 
+    List<Professor> findByInstituicaoIdOrderByNome(Long instituicaoId);
+
     /** Professores da instituicao que preencheram o criterio (nao nulo e nao vazio). */
     @Query("select p from Professor p where p.instituicao.id = :instituicaoId "
             + "and p.criteriosTransferencia is not null and trim(p.criteriosTransferencia) <> '' "
