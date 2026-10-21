@@ -139,6 +139,25 @@ Quando um aluno troca moedas por uma vantagem, o fluxo real é:
 
 Assim, o Controller não calcula saldo e o JavaScript não grava tabelas. A regra fica no Service, enquanto os Repositories isolam o acesso ao banco.
 
+## 5. Camada de persistência
+
+A persistência definitiva utiliza **MySQL 8+**. O backend aplica **Jakarta Persistence (JPA)** com **Hibernate ORM**, e o acesso é exposto por interfaces do **Spring Data JPA** que estendem `JpaRepository`.
+
+```mermaid
+flowchart LR
+    S[Service] --> J[JpaRepository]
+    J --> H[Hibernate / JPA]
+    H --> M[(MySQL)]
+```
+
+- As classes de `moedaEstudantil.model` são mapeadas com `@Entity`.
+- As interfaces de `moedaEstudantil.repository` oferecem CRUD, consultas derivadas e consultas específicas.
+- O Hibernate converte alterações em objetos Java para comandos SQL.
+- Em execução normal, a conexão é definida por `DB_URL`, `DB_USER` e `DB_PASSWORD`.
+- `spring.jpa.hibernate.ddl-auto=update` mantém o esquema compatível sem apagar os dados existentes.
+- `data.sql` fornece instituições, usuários e movimentações iniciais para demonstração.
+- O H2 possui escopo de teste e executa em memória; os dados dele desaparecem ao terminar os testes.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
