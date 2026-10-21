@@ -1,6 +1,6 @@
 # Assistente de transferência com IA local
 
-**Data:** 2026-10-21  
+**Data:** 2026-10-21
 **Status:** aprovado para preparação da implementação
 
 ## Contexto
