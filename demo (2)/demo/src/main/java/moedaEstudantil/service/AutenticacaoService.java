@@ -32,8 +32,12 @@ public class AutenticacaoService {
 
     @Transactional
     public UsuarioAutenticadoDTO autenticar(String email, String senha, String perfil) {
-        String normalizado = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
-        String perfilNormalizado = perfil == null ? "" : perfil.trim().toUpperCase(Locale.ROOT);
+        if (email == null || email.isBlank() || senha == null || senha.isBlank()
+                || perfil == null || perfil.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Informe e-mail, senha e perfil.");
+        }
+        String normalizado = email.trim().toLowerCase(Locale.ROOT);
+        String perfilNormalizado = perfil.trim().toUpperCase(Locale.ROOT);
         return switch (perfilNormalizado) {
             case "ALUNO" -> alunos.findByEmailIgnoreCase(normalizado)
                     .map(usuario -> validarAluno(usuario, senha)).orElseThrow(this::credenciaisInvalidas);
@@ -69,6 +73,6 @@ public class AutenticacaoService {
     }
 
     private ResponseStatusException credenciaisInvalidas() {
-        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "E-mail ou senha inválidos.");
+        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "E-mail, senha ou perfil inválido.");
     }
 }

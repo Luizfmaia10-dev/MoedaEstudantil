@@ -1,6 +1,8 @@
 package moedaEstudantil.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,5 +24,17 @@ class SenhaServiceTest {
         assertTrue(service.corresponde("legada", "legada"));
         assertFalse(service.corresponde("outra", "legada"));
         assertFalse(service.estaCodificada("legada"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"$2a$invalido", "$2b$invalido", "$2y$invalido"})
+    void naoAutenticaHashBcryptMalformadoComoTextoLegado(String armazenada) {
+        assertFalse(service.corresponde(armazenada, armazenada));
+    }
+
+    @Test
+    void rejeitaCredenciaisNulas() {
+        assertFalse(service.corresponde(null, "legada"));
+        assertFalse(service.corresponde("legada", null));
     }
 }

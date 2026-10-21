@@ -3,6 +3,9 @@ package moedaEstudantil.service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
 @Service
 public class SenhaService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -18,10 +21,11 @@ public class SenhaService {
         if (senhaInformada == null || senhaArmazenada == null) return false;
         return estaCodificada(senhaArmazenada)
                 ? encoder.matches(senhaInformada, senhaArmazenada)
-                : senhaArmazenada.equals(senhaInformada);
+                : MessageDigest.isEqual(senhaArmazenada.getBytes(StandardCharsets.UTF_8),
+                        senhaInformada.getBytes(StandardCharsets.UTF_8));
     }
 
     public boolean estaCodificada(String senha) {
-        return senha != null && senha.matches("^\\$2[aby]\\$\\d{2}\\$.*");
+        return senha != null && senha.matches("^\\$2[aby]\\$.*");
     }
 }
