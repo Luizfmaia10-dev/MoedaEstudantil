@@ -126,6 +126,19 @@ flowchart LR
 
 Essa organização evita que a interface acesse o banco diretamente. A View conhece somente a API; o Controller conhece os serviços; e os serviços usam os repositórios para consultar ou alterar os dados persistidos.
 
+### 4.2 Exemplo MVC do próprio sistema: resgate de uma vantagem
+
+Quando um aluno troca moedas por uma vantagem, o fluxo real é:
+
+1. **View:** `resgatar-vantagens.html` e `resgatar-vantagens.js` exibem o catálogo. `resgate-api.js` envia `POST /api/alunos/{alunoId}/resgates/{vantagemId}`.
+2. **Controller:** `ResgateVantagemController` recebe os identificadores da URL e delega a operação para `ResgateVantagemService`.
+3. **Model/Service:** o serviço localiza aluno, conta e vantagem; verifica se a vantagem está ativa; valida o custo e o saldo; debita as moedas; gera o cupom; registra a transação; e solicita o envio das notificações.
+4. **Model/Repository:** `AlunoRepository`, `ContaRepository`, `VantagemRepository` e `TransacaoRepository` executam as operações persistentes por meio do Hibernate.
+5. **Banco:** o MySQL atualiza o saldo da conta e grava uma transação do tipo `RESGATE`, relacionada ao aluno e à vantagem.
+6. **Resposta:** o Controller devolve HTTP `201 Created` com um `ResgateResultadoDTO` contendo o código do cupom e o novo saldo. A View atualiza a interface.
+
+Assim, o Controller não calcula saldo e o JavaScript não grava tabelas. A regra fica no Service, enquanto os Repositories isolam o acesso ao banco.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
