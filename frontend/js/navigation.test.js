@@ -61,6 +61,7 @@ for (const [rootIndex, root] of roots.entries()) {
       document.getElementById('test-result').textContent = JSON.stringify(pages.map(page => {
         const dom = new DOMParser().parseFromString(page.html, 'text/html');
         return { file: page.file, root: page.root, back: dom.querySelector('.brand-wrapper')?.getAttribute('href'),
+          explicitBack: dom.querySelector('.back-button')?.getAttribute('href'),
           links: [...dom.querySelectorAll('a[href]')].map(link => link.getAttribute('href')) };
       }));
     </script>`);
@@ -68,6 +69,7 @@ for (const [rootIndex, root] of roots.entries()) {
     assert.equal(result.length, 8);
     for (const page of result) {
       assert.equal(page.back, 'painel.html', `${page.root}/${page.file}`);
+      assert.equal(page.explicitBack, 'painel.html', `${page.root}/${page.file}: botão voltar`);
       assert.ok(page.links.every(href => !href.includes('dev-menu.html') && !/[?&](?:alunoId|professorId|empresaId|usuarioId)=\d+/.test(href)), page.file);
     }
     for (const perfil of ['ALUNO', 'PROFESSOR', 'EMPRESA']) {
