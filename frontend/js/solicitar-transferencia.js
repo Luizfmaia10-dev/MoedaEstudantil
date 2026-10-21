@@ -134,6 +134,23 @@ function validarFormulario() {
   return null;
 }
 
+function preencherFormularioComRascunho(rascunho) {
+  if (rascunho.destinatarioId) $('selDestinatario').value = String(rascunho.destinatarioId);
+  if (rascunho.avaliadorId) {
+    $('selAvaliador').value = String(rascunho.avaliadorId);
+    atualizarCriterioSelecionado();
+  }
+  if (rascunho.quantidade) $('inpQuantidade').value = String(rascunho.quantidade);
+  if (rascunho.justificativa) {
+    $('inpJustificativa').value = rascunho.justificativa;
+    $('contadorJust').textContent = `${rascunho.justificativa.length}/${LIMITE_JUSTIFICATIVA}`;
+  }
+  const primeiroAusente = !rascunho.destinatarioId ? $('selDestinatario')
+    : !rascunho.avaliadorId ? $('selAvaliador')
+      : !rascunho.quantidade ? $('inpQuantidade') : $('inpJustificativa');
+  primeiroAusente.focus();
+}
+
 async function enviar(e) {
   e.preventDefault();
   feedback('');
@@ -203,5 +220,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   $('listaSolicitacoes').addEventListener('click', e => {
     const btn = e.target.closest('button[data-cancelar]');
     if (btn) cancelar(Number(btn.dataset.cancelar));
+  });
+
+  window.TransferAssistant?.initializeTransferAssistant({
+    document,
+    api: window.transferenciaService,
+    alunoId,
+    modalAnimator: window.modalGsap,
+    starBorder: window.StarBorder,
+    thoughtLine: window.ThoughtLine,
+    voicePill: window.VoicePill,
+    onUseManual: preencherFormularioComRascunho,
+    onConfirmed: async () => {
+      await recarregarSaldoESolicitacoes();
+      feedback('Solicitação criada com a ajuda da IA!', 'ok');
+      const dialog = $('assistenteDialog');
+      window.setTimeout(() => {
+        if (!dialog.open) return;
+        if (window.modalGsap?.closeDialog) window.modalGsap.closeDialog(dialog);
+        else dialog.close();
+      }, 900);
+    }
   });
 });
