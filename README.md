@@ -156,6 +156,7 @@ Assim, o Controller não calcula saldo e o JavaScript não grava tabelas. A regr
 | Responsabilidade | Tecnologia |
 | --- | --- |
 | Interface | HTML5, CSS3, JavaScript e GSAP |
+| IA local | Ollama e Qwen2.5 0.5B Instruct |
 | API e aplicação | Java 21 e Spring Boot |
 | Endpoints | Spring Web MVC / REST |
 | Regras de negócio | Services Spring |
@@ -250,6 +251,16 @@ Frase de encerramento sugerida:
 ### 1. Pré-requisitos
 * **Java JDK 21** instalado e configurado no `PATH`.
 * **MySQL 8+** em execução local (ou remoto).
+* **Ollama** para usar o assistente opcional de transferência por IA.
+
+Instale o Ollama e baixe o modelo pequeno utilizado pelo projeto:
+
+```powershell
+winget install --id Ollama.Ollama -e
+ollama pull qwen2.5:0.5b-instruct
+```
+
+O modelo roda localmente, não exige chave de API e não envia a conversa para serviços externos. Sem o Ollama ou sem o modelo instalado, o backend usa um interpretador local determinístico para pedidos comuns; o formulário manual também continua disponível.
 
 ### 2. Configuração do Banco de Dados
 1. Crie um banco de dados vazio no MySQL:
@@ -300,7 +311,21 @@ MAIL_STARTTLS=false
 MAIL_FROM=nao-responda@moeda-estudantil.local
 ```
 
-Sem um servidor SMTP disponível, operações que exigem notificação por e-mail são recusadas e a movimentação financeira é revertida.
+Sem um servidor SMTP disponível, a operação principal é preservada e a falha da notificação fica registrada no log da aplicação.
+
+### 3.2 Assistente local de transferência
+
+O botão **Transferir com IA** aceita pedidos em português, como “mande vinte moedas para Ana”. O backend consulta o Ollama apenas para extrair destinatário, quantidade, professor e justificativa; nomes e permissões são sempre conferidos no banco.
+
+Configuração opcional:
+
+```env
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:0.5b-instruct
+OLLAMA_TIMEOUT=8s
+```
+
+A interpretação não movimenta moedas nem grava conversa. Somente após o aluno revisar e confirmar, o sistema chama o fluxo normal e persiste uma `solicitacao_transferencia` pendente para avaliação do professor.
 
 ### 4. Acessando o Frontend
 Com o backend em execução, você pode acessar a interface diretamente pelo navegador (servida pelo próprio Spring Boot) ou abrir a pasta `frontend/` com uma extensão como o *Live Server*:
