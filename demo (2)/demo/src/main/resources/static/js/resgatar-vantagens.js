@@ -18,14 +18,14 @@ function renderizar() {
 
 function confirmar(vantagem, gatilho) {
   vantagemPendente = vantagem; $r('modalTitulo').textContent = 'Confirmar resgate';
-  $r('modalCorpo').innerHTML = `Resgatar <strong>${escaparR(vantagem.nome)}</strong> por <strong>${vantagem.custoMoedas} moedas</strong>? O cupom será enviado ao seu e-mail.`;
+  $r('modalCorpo').innerHTML = `Resgatar <strong>${escaparR(vantagem.nome)}</strong> por <strong>${vantagem.custoMoedas} moedas</strong>? O cupom será exibido na tela após a confirmação.`;
   $r('modalCancelar').hidden = false; $r('modalConfirmar').hidden = false; $r('modalConfirmar').textContent = 'Confirmar resgate';
   window.modalGsap.abrir($r('modal'), $r('modalPainel'), gatilho);
 }
 
 function sucesso(resultado) {
   $r('modalTitulo').textContent = 'Resgate confirmado';
-  $r('modalCorpo').innerHTML = `O cupom foi enviado para você e para a empresa parceira.<span class="coupon-code">${escaparR(resultado.codigoCupom)}</span>`;
+  $r('modalCorpo').innerHTML = `Seu cupom foi gerado. Guarde este código para apresentar à empresa parceira.<span class="coupon-code">${escaparR(resultado.codigoCupom)}</span>`;
   $r('modalCancelar').hidden = true; $r('modalConfirmar').hidden = false; $r('modalConfirmar').textContent = 'Concluir';
   window.modalGsap.abrir($r('modal'), $r('modalPainel'));
 }
