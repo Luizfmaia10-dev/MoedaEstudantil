@@ -158,6 +158,23 @@ flowchart LR
 - `data.sql` fornece instituições, usuários e movimentações iniciais para demonstração.
 - O H2 possui escopo de teste e executa em memória; os dados dele desaparecem ao terminar os testes.
 
+### 5.1 Dados persistidos
+
+| Entidade/tabela | Dados mantidos |
+| --- | --- |
+| `instituicao` | Nome das instituições participantes. |
+| `usuario` | E-mail, senha protegida e discriminador do perfil. |
+| `aluno` | Nome, CPF, RG, endereço, curso e instituição. |
+| `professor` | Nome, CPF, departamento, critérios de transferência e instituição. |
+| `empresa_parceira` | Nome e CNPJ da empresa. |
+| `conta` | Usuário proprietário e saldo corrente de moedas. |
+| `vantagem` | Nome, descrição, custo, situação ativa, URL da foto e empresa responsável. |
+| `transacao` | Data, quantidade, entrada/saída, conta e tipo específico: envio, resgate ou transferência. |
+| `solicitacao_transferencia` | Remetente, destinatário, professor avaliador, quantidade, justificativa, situação e avaliação. |
+| `credito_semestral_professor` | Professor, ano, semestre, quantidade e data de cada crédito automático. |
+
+Esses registros permanecem no MySQL após reiniciar a aplicação. Cadastros, saldos, extratos, vantagens, solicitações e créditos semestrais são recuperados pelos repositórios quando o usuário volta ao sistema.
+
 ---
 ## 🚀 Como Rodar a Aplicação
 
