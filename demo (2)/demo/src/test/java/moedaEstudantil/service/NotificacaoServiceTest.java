@@ -8,12 +8,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -67,5 +71,19 @@ class NotificacaoServiceTest {
         assertEquals("aluno@teste.com", mensagens.get(0).getTo()[0]);
         assertEquals("empresa@teste.com", mensagens.get(1).getTo()[0]);
         assertTrue(mensagens.stream().allMatch(m -> m.getText().contains("CUPOM-ABC12345")));
+    }
+
+    @Test
+    void indisponibilidadeDoSmtpNaoInterrompeAOperacaoPrincipal() {
+        Aluno aluno = new Aluno();
+        aluno.setNome("Aluno Teste");
+        aluno.setEmail("aluno@teste.com");
+        Professor professor = new Professor();
+        professor.setNome("Glender Bras");
+        doThrow(new MailSendException("SMTP indisponivel"))
+                .when(mailSender).send(any(SimpleMailMessage.class));
+
+        assertDoesNotThrow(() -> service.notificarRecebimento(
+                aluno, professor, 25, "Participacao em aula"));
     }
 }

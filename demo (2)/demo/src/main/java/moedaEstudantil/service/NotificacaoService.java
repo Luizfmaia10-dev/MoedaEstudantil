@@ -5,11 +5,16 @@ import moedaEstudantil.model.Professor;
 import moedaEstudantil.model.Vantagem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class NotificacaoService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificacaoService.class);
 
     private final JavaMailSender mailSender;
     private final String remetente;
@@ -40,6 +45,11 @@ public class NotificacaoService {
         mensagem.setTo(destinatario);
         mensagem.setSubject(assunto);
         mensagem.setText(texto);
-        mailSender.send(mensagem);
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException erro) {
+            LOGGER.warn("E-mail para {} nao enviado; a operacao principal foi preservada: {}",
+                    destinatario, erro.getMessage());
+        }
     }
 }
