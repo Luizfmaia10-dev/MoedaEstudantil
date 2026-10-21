@@ -51,6 +51,13 @@ test('save rejeita dados e perfis inválidos', () => {
   assert.throws(() => session.save({ id: 'x', perfil: 'ALUNO' }), /Sessão inválida/);
 });
 
+test('save rejeita id ausente ou vazio', () => {
+  const session = createSessionStore(memoryStorage());
+  for (const id of [null, '']) {
+    assert.throws(() => session.save({ id, perfil: 'ALUNO' }), /Sessão inválida/);
+  }
+});
+
 test('read descarta JSON corrompido', () => {
   const storage = memoryStorage([['moeda_estudantil_sessao_v1', '{']]);
   const session = createSessionStore(storage);

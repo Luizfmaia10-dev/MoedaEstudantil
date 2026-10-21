@@ -32,3 +32,18 @@
 
 - A URL base do backend permanece literal `http://localhost:8080`, como indicado no contrato fornecido.
 - Os cartões de professor e empresa refletem ações ativas já listadas em `frontend/dev-menu.html`; recursos marcados como passivos foram omitidos.
+
+## Fix round 1/5 — rejeitar IDs nulos e vazios
+
+### Arquivos
+
+- `frontend/js/core/session.test.js`: regressão para `id: null` e `id: ''` em `save`.
+- `frontend/js/core/routes.test.js`: regressão para `id: null` e `id: ''` em `cardsFor`.
+- `frontend/js/core/session.js` e `frontend/js/core/routes.js`: rejeitam ID nulo/ausente ou string em branco antes da conversão numérica.
+
+### Testes
+
+- RED — `node --test frontend/js/core/session.test.js frontend/js/core/routes.test.js`: 13 testes, 11 passaram e 2 falharam como esperado com `Missing expected exception` nos novos casos.
+- GREEN — `node --test frontend/js/core/session.test.js frontend/js/core/routes.test.js`: 13 testes, 13 passaram, 0 falhas.
+- Suite completa — `node --test`: 21 testes, 21 passaram, 0 falhas.
+- `git diff --check`: sem erros de whitespace.

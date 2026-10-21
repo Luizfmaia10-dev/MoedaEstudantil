@@ -6,7 +6,8 @@
     if (!storage) throw new Error('Armazenamento de sessão indisponível.');
 
     function sanitize(value) {
-      if (!value || !Number.isFinite(Number(value.id)) || !PERFIS.has(value.perfil)) return null;
+      if (!value || value.id == null || (typeof value.id === 'string' && value.id.trim() === '') ||
+        !Number.isFinite(Number(value.id)) || !PERFIS.has(value.perfil)) return null;
       return {
         id: Number(value.id),
         nome: String(value.nome || ''),

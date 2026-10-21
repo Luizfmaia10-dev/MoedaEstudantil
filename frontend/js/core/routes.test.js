@@ -39,6 +39,9 @@ test('cardsFor devolve cópias dos cartões', () => {
 test('cardsFor recusa perfil ou identidade inválidos', () => {
   assert.throws(() => cardsFor({ id: 1, perfil: 'ADMIN' }), /Perfil inválido/);
   assert.throws(() => cardsFor({ perfil: 'ALUNO' }), /Perfil inválido/);
+  for (const id of [null, '']) {
+    assert.throws(() => cardsFor({ id, perfil: 'ALUNO' }), /Perfil inválido/);
+  }
 });
 
 test('todos os cartões possuem conteúdo descritivo', () => {

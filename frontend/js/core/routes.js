@@ -22,7 +22,9 @@
   }
 
   function cardsFor(session) {
-    if (!session || !CATALOG[session.perfil] || !Number.isFinite(Number(session.id))) {
+    if (!session || !CATALOG[session.perfil] || session.id == null ||
+      (typeof session.id === 'string' && session.id.trim() === '') ||
+      !Number.isFinite(Number(session.id))) {
       throw new Error('Perfil inválido.');
     }
     const id = Number(session.id);
