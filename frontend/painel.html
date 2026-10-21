@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#163300">
+  <title>Seu painel | Moeda Estudantil</title>
+  <link rel="stylesheet" href="css/painel.css">
+</head>
+<body class="dashboard-shell">
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+  <header class="dashboard-nav">
+    <a class="brand" href="index.html" aria-label="Moeda Estudantil - início">ME<span aria-hidden="true">.</span></a>
+    <button id="logoutButton" class="button button--ghost" type="button">Sair</button>
+  </header>
+  <main id="main">
+    <section class="dashboard-hero" aria-labelledby="dashboardTitle">
+      <p id="profileLabel" class="eyebrow"></p>
+      <h1 id="dashboardTitle">Seu painel</h1>
+      <p>Escolha o que você quer fazer agora.</p>
+    </section>
+    <section class="dashboard-actions" aria-label="Funcionalidades disponíveis">
+      <div id="actionGrid" class="action-grid"></div>
+    </section>
+    <noscript><p class="noscript-message">Ative o JavaScript para acessar seu painel.</p></noscript>
+  </main>
+  <footer class="dashboard-footer">Moeda Estudantil · Reconhecimento que gera oportunidades.</footer>
+  <script src="js/core/session.js"></script>
+  <script src="js/core/routes.js"></script>
+  <script src="js/painel.js"></script>
+</body>
+</html>
