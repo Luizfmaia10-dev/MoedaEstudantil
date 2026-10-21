@@ -151,6 +151,21 @@ Quando um aluno troca moedas por uma vantagem, o fluxo real é:
 
 Assim, o Controller não calcula saldo e o JavaScript não grava tabelas. A regra fica no Service, enquanto os Repositories isolam o acesso ao banco.
 
+### 4.3 Tecnologias por responsabilidade
+
+| Responsabilidade | Tecnologia |
+| --- | --- |
+| Interface | HTML5, CSS3, JavaScript e GSAP |
+| API e aplicação | Java 21 e Spring Boot |
+| Endpoints | Spring Web MVC / REST |
+| Regras de negócio | Services Spring |
+| Persistência | Spring Data JPA e Hibernate |
+| Banco principal | MySQL 8+ |
+| Banco de testes | H2 em memória |
+| Segurança de senhas | BCrypt |
+| Notificações | Spring Mail / SMTP |
+| Testes | JUnit 5, Mockito e Node Test Runner |
+
 ## 5. Camada de persistência
 
 A persistência definitiva utiliza **MySQL 8+**. O backend aplica **Jakarta Persistence (JPA)** com **Hibernate ORM**, e o acesso é exposto por interfaces do **Spring Data JPA** que estendem `JpaRepository`.
