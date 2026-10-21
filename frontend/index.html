@@ -7,6 +7,7 @@
   <meta name="description" content="Conecte professores, alunos e parceiros em um ciclo de reconhecimento. Transforme mérito em moedas e moedas em experiências reais.">
   <title>Moeda Estudantil — Reconhecimento que circula</title>
   <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/interactions.css">
 </head>
 <body>
   <a class="skip-link" href="#produto">Pular para o conteúdo</a>
@@ -34,11 +35,23 @@
         <div class="hero__note"><span aria-hidden="true">↔</span> Uma comunidade. Novas possibilidades.</div>
       </div>
       <div class="coin-stage" aria-hidden="true">
-        <div class="orbit orbit--outer"></div><div class="orbit orbit--inner"></div>
-        <span class="orbit-dot orbit-dot--one"></span><span class="orbit-dot orbit-dot--two"></span><span class="orbit-dot orbit-dot--three"></span>
+        <div class="orbit-track orbit-track--outer"></div><div class="orbit-track orbit-track--inner"></div>
         <span class="stage-label stage-label--top">MÉRITO EM ÓRBITA</span>
-        <div class="coin"><div class="coin__edge"></div><div class="coin__face"><span>m<span class="coin__spark">✦</span></span></div></div>
-        <div class="balance-card"><span class="balance-card__icon">↗</span><div><span>Seu próximo passo vale.</span><strong>+ reconhecimento</strong><span>Mais motivos para ir além.</span></div></div>
+        <div class="world-globe" data-world-globe>
+          <div class="world-globe__surface">
+            <svg class="world-globe__map" viewBox="0 0 420 420" focusable="false" aria-hidden="true">
+              <path d="M52 98c22-34 64-58 107-62l35 22 33 8 8 25-25 20-17 39-35 12-17 36-30-2-19-27-31-13-19-31z"/>
+              <path d="M185 218l34-21 37 10 20 31-11 31-18 20-6 54-29 36-21-25 4-40-19-25-11-31z"/>
+              <path d="M264 76l51 8 43 30 20 38-21 18-8 35-29 6-19-21-39-8-18-35 19-24-12-29z"/>
+              <path d="M316 260l31-9 27 20-4 30-30 17-28-14-8-24z"/>
+            </svg>
+            <span class="world-globe__grid" aria-hidden="true"></span>
+            <span class="world-globe__shine" aria-hidden="true"></span>
+          </div>
+        </div>
+        <span class="orbiting-coin orbiting-coin--lime" data-orbit-coin data-orbit-phase="0" data-orbit-x=".36" data-orbit-y=".19" data-orbit-spin="1"><span class="orbiting-coin__face">ME</span></span>
+        <span class="orbiting-coin orbiting-coin--forest" data-orbit-coin data-orbit-phase="2.0943951023931953" data-orbit-x=".43" data-orbit-y=".28" data-orbit-spin="-1"><span class="orbiting-coin__face">✦</span></span>
+        <span class="orbiting-coin orbiting-coin--cream" data-orbit-coin data-orbit-phase="4.1887902047863905" data-orbit-x=".31" data-orbit-y=".34" data-orbit-spin="1"><span class="orbiting-coin__face">M</span></span>
         <span class="stage-label stage-label--bottom">CONQUISTAR. CIRCULAR. TRANSFORMAR.</span>
       </div>
     </section>
@@ -90,6 +103,9 @@
     </form>
     <a id="signupLink" class="text-link signup-link" href="aluno.html?tab=cadastro">Criar conta <span aria-hidden="true">↗</span></a>
   </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="js/modal-gsap.js"></script>
   <script src="js/core/http.js"></script>
   <script src="js/core/session.js"></script>
   <script src="js/core/routes.js"></script>

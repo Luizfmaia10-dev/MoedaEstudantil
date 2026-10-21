@@ -76,7 +76,7 @@ function atualizarPrevia(src) {
   else { img.removeAttribute('src'); img.style.display = 'none'; }
 }
 
-function abrirModal(vantagem) {
+function abrirModal(vantagem, gatilho) {
   editandoId = vantagem ? vantagem.id : null;
   $('modalTitulo').textContent = vantagem ? 'Editar vantagem' : 'Nova vantagem';
   $('fNome').value = vantagem ? vantagem.nome : '';
@@ -86,12 +86,14 @@ function abrirModal(vantagem) {
   $('fotoDica').textContent = vantagem ? '(deixe vazio para manter a atual)' : '(obrigatória)';
   atualizarPrevia(vantagem ? window.vantagemService.urlFoto(vantagem.fotoUrl) : null);
   mostrarErroForm('');
-  $('modalFundo').classList.add('aberto');
-  $('fNome').focus();
+  if (window.modalGsap) window.modalGsap.openOverlay($('modalFundo'), $('formVantagem'), gatilho);
+  else { $('modalFundo').classList.add('aberto'); $('fNome').focus(); }
 }
 
 function fecharModal() {
+  if (window.modalGsap) return window.modalGsap.closeOverlay($('modalFundo'), $('formVantagem'));
   $('modalFundo').classList.remove('aberto');
+  return Promise.resolve();
 }
 
 function validarFormulario() {
@@ -127,7 +129,7 @@ async function salvar(evento) {
   try {
     if (editandoId) await window.vantagemService.atualizar(empresaId, editandoId, dados);
     else await window.vantagemService.criar(empresaId, dados);
-    fecharModal();
+    await fecharModal();
     await carregar();
   } catch (err) {
     mostrarErroForm(err instanceof TypeError ? 'Backend indisponível.' : err.message);
@@ -155,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return mostrarSomente('erro');
   }
 
-  $('btnNova').addEventListener('click', () => abrirModal(null));
+  $('btnNova').addEventListener('click', event => abrirModal(null, event.currentTarget));
   $('btnCancelar').addEventListener('click', fecharModal);
   $('modalFundo').addEventListener('click', e => { if (e.target === $('modalFundo')) fecharModal(); });
   $('formVantagem').addEventListener('submit', salvar);
@@ -169,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = e.target.closest('button[data-acao]');
     if (!btn) return;
     const id = Number(btn.dataset.id);
-    if (btn.dataset.acao === 'editar') abrirModal(vantagens.find(v => v.id === id));
+    if (btn.dataset.acao === 'editar') abrirModal(vantagens.find(v => v.id === id), btn);
     else remover(id);
   });
 

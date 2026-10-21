@@ -6,6 +6,7 @@
   <title>Moeda Estudantil - Minhas Vantagens</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/interactions.css">
   <style>
     .vant-wrap { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
     .vant-topo { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; }
@@ -70,8 +71,8 @@
   </main>
 
   <!-- Modal de criação/edição -->
-  <div id="modalFundo" class="modal-fundo">
-    <form id="formVantagem" class="modal" novalidate>
+  <div id="modalFundo" class="modal-fundo" aria-hidden="true">
+    <form id="formVantagem" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" novalidate>
       <h2 id="modalTitulo">Nova vantagem</h2>
 
       <div class="campo">
@@ -100,6 +101,8 @@
     </form>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="js/modal-gsap.js"></script>
   <script src="js/core/http.js"></script>
   <script src="js/core/format.js"></script>
   <script src="js/vantagens-api.js"></script>

@@ -11,7 +11,69 @@
     return profiles[perfil];
   }
 
-  function initializeLanding({ document, location, authApi, sessionStore, routes, matchMedia }) {
+  function calculateOrbitFrame({ progress, phase = 0, radiusX, radiusY, spin = 1 }) {
+    const round = value => Math.round(value * 1000) / 1000;
+    const angle = progress * Math.PI * 2 + phase;
+    const depth = (Math.sin(angle) + 1) / 2;
+    return {
+      x: round(Math.cos(angle) * radiusX),
+      y: round(Math.sin(angle) * radiusY),
+      scale: round(.7 + depth * .3),
+      opacity: round(.58 + depth * .42),
+      zIndex: depth >= .5 ? 30 : 10,
+      rotation: round(progress * 720 * spin)
+    };
+  }
+
+  function initializeHeroMotion({ stage, gsap, ScrollTrigger, reducedMotion }) {
+    if (!stage) return null;
+    const coins = Array.from(stage.querySelectorAll('[data-orbit-coin]'));
+    if (!coins.length) return null;
+    const controller = { progress: .25 };
+
+    function render() {
+      const box = stage.getBoundingClientRect();
+      stage.style.setProperty('--globe-scroll-spin', `${Math.round(controller.progress * 48)}deg`);
+      coins.forEach(coin => {
+        const frame = calculateOrbitFrame({
+          progress: controller.progress,
+          phase: Number(coin.dataset.orbitPhase || 0),
+          radiusX: box.width * Number(coin.dataset.orbitX || .34),
+          radiusY: box.height * Number(coin.dataset.orbitY || .2),
+          spin: Number(coin.dataset.orbitSpin || 1)
+        });
+        coin.style.setProperty('--orbit-x', `${frame.x}px`);
+        coin.style.setProperty('--orbit-y', `${frame.y}px`);
+        coin.style.setProperty('--orbit-scale', String(frame.scale));
+        coin.style.setProperty('--orbit-opacity', String(frame.opacity));
+        coin.style.setProperty('--orbit-rotation', `${frame.rotation}deg`);
+        coin.style.zIndex = String(frame.zIndex);
+      });
+    }
+
+    render();
+    if (reducedMotion || !gsap || !ScrollTrigger) {
+      stage.dataset.motion = 'reduced';
+      return null;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+    stage.dataset.motion = 'scroll';
+    controller.progress = 0;
+    return gsap.to(controller, {
+      progress: 1,
+      ease: 'none',
+      onUpdate: render,
+      scrollTrigger: {
+        trigger: stage,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: .65,
+        invalidateOnRefresh: true
+      }
+    });
+  }
+
+  function initializeLanding({ document, location, authApi, sessionStore, routes, matchMedia, gsap, ScrollTrigger, modalAnimator }) {
     let state = createLoginState('ALUNO');
     let opener;
     let pending = false;
@@ -40,20 +102,30 @@
     function openLogin(button) {
       opener = button;
       selectProfile(button?.dataset.profile || 'ALUNO');
-      if (!dialog.open) dialog.showModal();
-      email.focus();
+      if (modalAnimator) modalAnimator.openDialog(dialog, button, email);
+      else {
+        if (!dialog.open) dialog.showModal();
+        email.focus();
+      }
+    }
+
+    function closeLogin() {
+      if (modalAnimator) return modalAnimator.closeDialog(dialog);
+      dialog.close();
+      return Promise.resolve();
     }
 
     document.querySelectorAll('[data-open-login]').forEach(button => {
       button.addEventListener('click', () => openLogin(button));
     });
     profiles.forEach(button => button.addEventListener('click', () => selectProfile(button.dataset.profile)));
-    document.getElementById('closeLogin').addEventListener('click', () => dialog.close());
+    document.getElementById('closeLogin').addEventListener('click', closeLogin);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); closeLogin(); });
     dialog.addEventListener('close', () => opener?.focus());
     dialog.addEventListener('click', event => {
       if (event.target !== dialog) return;
       const box = dialog.getBoundingClientRect();
-      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeLogin();
     });
 
     form.addEventListener('submit', async event => {
@@ -101,26 +173,28 @@
     if (stage && matchMedia) {
       const hover = matchMedia('(hover: hover)');
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      initializeHeroMotion({ stage, gsap, ScrollTrigger, reducedMotion: reducedMotion.matches });
       stage.addEventListener('pointermove', event => {
         if (!hover.matches || reducedMotion.matches) return;
         const box = stage.getBoundingClientRect();
         const tilt = ((event.clientX - box.left) / box.width - .5) * 12;
-        stage.style.setProperty('--tilt', `${tilt}deg`);
+        stage.style.setProperty('--pointer-tilt', `${tilt}deg`);
       });
-      stage.addEventListener('pointerleave', () => stage.style.removeProperty('--tilt'));
-      reducedMotion.addEventListener('change', () => stage.style.removeProperty('--tilt'));
+      stage.addEventListener('pointerleave', () => stage.style.removeProperty('--pointer-tilt'));
+      reducedMotion.addEventListener('change', () => stage.style.removeProperty('--pointer-tilt'));
     }
     selectProfile('ALUNO');
     if (new URLSearchParams(location.search).get('entrar') === '1') openLogin();
   }
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { createLoginState, initializeLanding };
+    module.exports = { createLoginState, initializeLanding, calculateOrbitFrame, initializeHeroMotion };
   } else if (root.document) {
     initializeLanding({
       document: root.document, location: root.location, authApi: root.AuthApi,
       sessionStore: root.AppSession.current, routes: root.AppRoutes,
-      matchMedia: root.matchMedia.bind(root)
+      matchMedia: root.matchMedia.bind(root), gsap: root.gsap, ScrollTrigger: root.ScrollTrigger,
+      modalAnimator: root.modalGsap
     });
   }
 })(typeof window !== 'undefined' ? window : globalThis);

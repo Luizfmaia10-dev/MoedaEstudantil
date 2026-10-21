@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Modal de Exclusão (Delete)
   const deleteModal = document.getElementById('deleteModal');
+  const deletePanel = deleteModal.querySelector?.('.modal-container') || deleteModal;
   const btnOpenDeleteModal = document.getElementById('btnOpenDeleteModal');
   const btnCloseDeleteModal = document.getElementById('btnCloseDeleteModal');
   const btnCancelDelete = document.getElementById('btnCancelDelete');
@@ -256,11 +257,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. EXCLUIR MINHA CONTA (DELETE)
     btnOpenDeleteModal.addEventListener('click', () => {
-      deleteModal.classList.add('active');
+      if (window.modalGsap) window.modalGsap.openOverlay(deleteModal, deletePanel, btnOpenDeleteModal);
+      else deleteModal.classList.add('active');
     });
 
     const fecharModalExclusao = () => {
+      if (window.modalGsap) return window.modalGsap.closeOverlay(deleteModal, deletePanel);
       deleteModal.classList.remove('active');
+      return Promise.resolve();
     };
 
     btnCloseDeleteModal.addEventListener('click', fecharModalExclusao);
@@ -269,7 +273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnConfirmDelete.addEventListener('click', async () => {
       try {
         await window.alunoAuthService.excluirMinhaConta();
-        fecharModalExclusao();
+        await fecharModalExclusao();
         showToast('Sua conta foi excluída com sucesso.', 'success');
         renderAuthView();
       } catch (err) {

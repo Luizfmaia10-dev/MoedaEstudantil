@@ -11,6 +11,47 @@ const features = ['resgatar-vantagens.html', 'extrato.html', 'solicitar-transfer
   'criterios-transferencia.html', 'distribuir-moedas.html', 'criterios-professor.html',
   'avaliar-transferencias.html', 'vantagens.html'];
 
+test('controles interativos compartilham transições de hover sem afetar desabilitados', t => {
+  const interactions = pathToFileURL(resolve(roots[0], 'css/interactions.css')).href;
+  const result = browserResult(t, `<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="${interactions}">
+    <button id="plain">Ação</button><button id="disabled" disabled>Bloqueado</button>
+    <a id="button" class="button" href="#">Entrar</a><a id="card" class="action-card" href="#">Cartão</a>
+    <pre id="test-result"></pre><script>
+      function inspect(id) { const style = getComputedStyle(document.getElementById(id)); return { duration: style.transitionDuration, properties: style.transitionProperty }; }
+      document.getElementById('test-result').textContent = JSON.stringify({ plain: inspect('plain'), disabled: inspect('disabled'), button: inspect('button'), card: inspect('card') });
+    </script>`);
+  if (!result) return;
+  for (const id of ['plain', 'button', 'card']) {
+    assert.notEqual(result[id].duration, '0s', id);
+    assert.match(result[id].properties, /transform/, id);
+  }
+  assert.equal(result.disabled.duration, '0s');
+});
+
+test('todas as páginas carregam hover compartilhado e cada modal carrega o animador GSAP', t => {
+  const pages = require('node:fs').readdirSync(roots[0]).filter(file => file.endsWith('.html'))
+    .map(file => ({ file, html: readFileSync(resolve(roots[0], file), 'utf8') }));
+  const payload = JSON.stringify(pages).replaceAll('<', '\\u003c');
+  const result = browserResult(t, `<!doctype html><meta charset="utf-8"><pre id="test-result"></pre><script>
+    const pages = ${payload};
+    document.getElementById('test-result').textContent = JSON.stringify(pages.map(page => {
+      const dom = new DOMParser().parseFromString(page.html, 'text/html');
+      const hasModal = !!dom.querySelector('dialog, [role="dialog"], .modal-fundo');
+      const scripts = [...dom.querySelectorAll('script[src]')].map(script => script.getAttribute('src'));
+      return { file: page.file, interactions: !!dom.querySelector('link[href="css/interactions.css"]'), hasModal,
+        modalGsap: scripts.includes('js/modal-gsap.js'), gsap: scripts.some(src => src.includes('/gsap@')) };
+    }));
+  </script>`);
+  if (!result) return;
+  for (const page of result) {
+    assert.equal(page.interactions, true, page.file);
+    if (page.hasModal) {
+      assert.equal(page.modalGsap, true, `${page.file}: modal-gsap`);
+      assert.equal(page.gsap, true, `${page.file}: GSAP`);
+    }
+  }
+});
+
 for (const [rootIndex, root] of roots.entries()) {
   test(`todas as funcionalidades voltam ao painel sem atalhos de identidade fixa (${rootIndex ? 'espelho' : 'fonte'})`, t => {
     const pages = features.map(file => ({ file, root, html: readFileSync(resolve(root, file), 'utf8') }));

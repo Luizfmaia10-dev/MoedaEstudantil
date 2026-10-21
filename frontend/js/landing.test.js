@@ -1,8 +1,85 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createLoginState, initializeLanding } = require('./landing.js');
+const { createLoginState, initializeLanding, calculateOrbitFrame, initializeHeroMotion } = require('./landing.js');
 const { createSessionStore } = require('./core/session.js');
 const routes = require('./core/routes.js');
+
+test('órbita converte o progresso do scroll em posição, profundidade e rotação reversíveis', () => {
+  const front = calculateOrbitFrame({ progress: .25, phase: 0, radiusX: 100, radiusY: 50, spin: 1 });
+  assert.ok(Math.abs(front.x) < .001);
+  assert.equal(front.y, 50);
+  assert.equal(front.scale, 1);
+  assert.equal(front.opacity, 1);
+  assert.equal(front.zIndex, 30);
+  assert.equal(front.rotation, 180);
+
+  const back = calculateOrbitFrame({ progress: .75, phase: 0, radiusX: 100, radiusY: 50, spin: 1 });
+  assert.ok(Math.abs(back.x) < .001);
+  assert.equal(back.y, -50);
+  assert.equal(back.scale, .7);
+  assert.equal(back.opacity, .58);
+  assert.equal(back.zIndex, 10);
+  assert.equal(back.rotation, 540);
+
+  const firstPass = calculateOrbitFrame({ progress: .25, phase: Math.PI, radiusX: 100, radiusY: 50, spin: -1 });
+  const laterPass = calculateOrbitFrame({ progress: .75, phase: Math.PI, radiusX: 100, radiusY: 50, spin: -1 });
+  const returnedPass = calculateOrbitFrame({ progress: .25, phase: Math.PI, radiusX: 100, radiusY: 50, spin: -1 });
+  assert.notDeepEqual(laterPass, firstPass);
+  assert.deepEqual(returnedPass, firstPass);
+});
+
+test('hero liga as moedas ao ScrollTrigger com scrub e atualiza o globo', () => {
+  function style() {
+    const values = new Map();
+    return { values, setProperty(name, value) { values.set(name, String(value)); }, removeProperty(name) { values.delete(name); } };
+  }
+  const coins = [
+    { dataset: { orbitPhase: '0', orbitX: '.34', orbitY: '.19', orbitSpin: '1' }, style: style() },
+    { dataset: { orbitPhase: '3.141592653589793', orbitX: '.42', orbitY: '.26', orbitSpin: '-1' }, style: style() }
+  ];
+  const stage = {
+    dataset: {}, style: style(),
+    querySelectorAll(selector) { return selector === '[data-orbit-coin]' ? coins : []; },
+    getBoundingClientRect() { return { width: 500, height: 400 }; }
+  };
+  const ScrollTrigger = { name: 'ScrollTrigger' };
+  let tweenTarget;
+  let tweenOptions;
+  const gsap = {
+    registerPlugin(plugin) { assert.equal(plugin, ScrollTrigger); },
+    to(target, options) { tweenTarget = target; tweenOptions = options; return { kill() {} }; }
+  };
+
+  initializeHeroMotion({ stage, gsap, ScrollTrigger, reducedMotion: false });
+  assert.equal(tweenOptions.scrollTrigger.trigger, stage);
+  assert.equal(tweenOptions.scrollTrigger.scrub, .65);
+  assert.equal(tweenOptions.scrollTrigger.start, 'top bottom');
+  assert.equal(tweenOptions.scrollTrigger.end, 'bottom top');
+
+  tweenTarget.progress = .25;
+  tweenOptions.onUpdate();
+  assert.equal(stage.style.values.get('--globe-scroll-spin'), '12deg');
+  assert.match(coins[0].style.values.get('--orbit-x'), /^0(?:\.0+)?px$/);
+  assert.equal(coins[0].style.values.get('--orbit-y'), '76px');
+  assert.equal(coins[0].style.values.get('--orbit-scale'), '1');
+  assert.equal(coins[0].style.zIndex, '30');
+});
+
+test('movimento reduzido mantém uma composição estática sem criar ScrollTrigger', () => {
+  const values = new Map();
+  const coin = { dataset: { orbitPhase: '0', orbitX: '.3', orbitY: '.2', orbitSpin: '1' }, style: { setProperty(name, value) { values.set(name, value); } } };
+  const stage = {
+    dataset: {}, style: { setProperty() {} },
+    querySelectorAll() { return [coin]; },
+    getBoundingClientRect() { return { width: 400, height: 300 }; }
+  };
+  let animated = false;
+  const result = initializeHeroMotion({ stage, gsap: { to() { animated = true; } }, ScrollTrigger: {}, reducedMotion: true });
+  assert.equal(animated, false);
+  assert.equal(stage.dataset.motion, 'reduced');
+  assert.equal(values.get('--orbit-scale'), '1');
+  assert.equal(result, null);
+});
 
 test('foco mantém contraste nas superfícies claras, forest, lima e nos controles do diálogo', t => {
   const { readFileSync } = require('node:fs');
@@ -39,6 +116,34 @@ test('foco mantém contraste nas superfícies claras, forest, lima e nos control
     const contrast = contrastRatio(focus.outline, focus.background);
     assert.ok(contrast >= 3, `${focus.selector}: indicador de foco precisa de contraste 3:1; encontrado ${contrast.toFixed(2)}:1.`);
   }
+});
+
+test('hero renderiza globo 3D e três moedas em órbitas responsivas', t => {
+  const { readFileSync } = require('node:fs');
+  const { resolve } = require('node:path');
+  const { pathToFileURL } = require('node:url');
+  const { browserResult } = require('../../test-support/chromium.cjs');
+  const stylesheet = pathToFileURL(resolve(__dirname, '../css/landing.css')).href;
+  const page = readFileSync(resolve(__dirname, '../index.html'), 'utf8')
+    .replace('css/landing.css', stylesheet).replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+  const result = browserResult(t, page.replace('</body>', `<pre id="test-result"></pre><script>
+    const globe = document.querySelector('[data-world-globe]');
+    const coins = [...document.querySelectorAll('[data-orbit-coin]')];
+    const stage = document.querySelector('.coin-stage');
+    document.getElementById('test-result').textContent = JSON.stringify({
+      globe: globe ? getComputedStyle(globe).borderRadius : null,
+      coins: coins.length,
+      coinPosition: coins[0] ? getComputedStyle(coins[0]).position : null,
+      stageOverflow: stage ? getComputedStyle(stage).overflowX : null,
+      overflow: document.documentElement.scrollWidth > innerWidth
+    });
+  </script></body>`));
+  if (!result) return;
+  assert.equal(result.globe, '50%');
+  assert.equal(result.coins, 3);
+  assert.equal(result.coinPosition, 'absolute');
+  assert.equal(result.stageOverflow, 'clip');
+  assert.equal(result.overflow, false);
 });
 
 test('professor nunca recebe link de cadastro', () => {
