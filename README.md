@@ -88,6 +88,7 @@ Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de
 * Veja o [**diagrama de classes**](Artefatos/diagrama-classes-v2.pdf)
 * Veja o [**diagrama de componentes**](Artefatos/diagrama-componentes.pdf)
 * Veja o [**diagrama de entidade e relacionamento**](Artefatos/diagramaER.md)
+* Veja os [**diagramas de sequência**](Artefatos/diagramas-sequencia.md)
 
 ---
 ## 🛠️ Tecnologias e Arquitetura
