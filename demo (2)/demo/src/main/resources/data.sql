@@ -1,33 +1,33 @@
--- 1. Carga de Instituições
-INSERT INTO instituicao (id, nome) VALUES (1, 'PUC Minas');
-INSERT INTO instituicao (id, nome) VALUES (2, 'Universidade Federal de Minas Gerais (UFMG)');
+-- 1. Carga de Instituicoes
+INSERT IGNORE INTO instituicao (id, nome) VALUES (1, 'PUC Minas');
+INSERT IGNORE INTO instituicao (id, nome) VALUES (2, 'Universidade Federal de Minas Gerais (UFMG)');
 
--- 2. Carga de Usuários (Base para os Professores)
--- Nota: Em um ambiente real, as senhas estariam criptografadas (BCrypt). 
-INSERT INTO usuario (id, email, senha, tipo_usuario) 
+-- 2. Carga de Usuarios (Base para os Professores)
+-- Nota: Em um ambiente real, as senhas estariam criptografadas (BCrypt).
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
 VALUES (1, 'glender.bras@pucminas.br', 'senha123', 'PROFESSOR');
 
-INSERT INTO usuario (id, email, senha, tipo_usuario) 
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
 VALUES (2, 'helena.souza@pucminas.br', 'senha123', 'PROFESSOR');
 
-INSERT INTO usuario (id, email, senha, tipo_usuario) 
+INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
 VALUES (3, 'carlos.teatro@ufmg.br', 'senha123', 'PROFESSOR');
 
--- 3. Carga de Professores (Especialização do Usuário)
-INSERT INTO professor (usuario_id, nome, cpf, departamento, criterios_transferencia, instituicao_id) 
-VALUES (1, 'Glender Brás', '111.111.111-11', 'Engenharia de Software', 'Aprovação para alunos com nota acima de 80 e boa participação.', 1);
+-- 3. Carga de Professores (Especializacao do Usuario)
+INSERT IGNORE INTO professor (usuario_id, nome, cpf, departamento, criterios_transferencia, instituicao_id)
+VALUES (1, 'Glender Bras', '111.111.111-11', 'Engenharia de Software', 'Aprovacao para alunos com nota acima de 80 e boa participacao.', 1);
 
-INSERT INTO professor (usuario_id, nome, cpf, departamento, criterios_transferencia, instituicao_id) 
-VALUES (2, 'Helena Souza', '222.222.222-22', 'Engenharia de Software', 'Aprovo se o aluno entregar todos os laboratórios no prazo.', 1);
+INSERT IGNORE INTO professor (usuario_id, nome, cpf, departamento, criterios_transferencia, instituicao_id)
+VALUES (2, 'Helena Souza', '222.222.222-22', 'Engenharia de Software', 'Aprovo se o aluno entregar todos os laboratorios no prazo.', 1);
 
-INSERT INTO professor (usuario_id, nome, cpf, departamento, criterios_transferencia, instituicao_id) 
-VALUES (3, 'Carlos Silva', '333.333.333-33', 'Escola de Belas Artes - Teatro', 'Aprovo se o aluno ajudar na organização técnica ou ensaios.', 2);
+INSERT IGNORE INTO professor (usuario_id, nome, cpf, departamento, criterios_transferencia, instituicao_id)
+VALUES (3, 'Carlos Silva', '333.333.333-33', 'Escola de Belas Artes - Teatro', 'Aprovo se o aluno ajudar na organizacao tecnica ou ensaios.', 2);
 
 -- 4. Carga Inicial de Contas para os Professores
--- A Regra de Negócio exige que os professores recebam 1000 moedas no semestre.
-INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (1, 1000, 1);
-INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (2, 1000, 2);
-INSERT INTO conta (id, saldo_corrente, usuario_id) VALUES (3, 1000, 3);
+-- A Regra de Negocio exige que os professores recebam 1000 moedas no semestre.
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (1, 1000, 1);
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (2, 1000, 2);
+INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (3, 1000, 3);
 
 -- 5. Carga de exemplo para testar o extrato (RF-006)
 -- Aluno de teste: usuario_id 4 / conta 4. Professor Glender: usuario_id 1 / conta 1.
@@ -52,6 +52,7 @@ INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_mo
 VALUES (4, 'ENVIO', '2026-09-15 14:30:00', 30, 'ENTRADA', 4, 'Entrega antecipada do laboratorio', 1, 4);
 INSERT IGNORE INTO transacao (id, tipo_transacao, data_hora, quantidade, tipo_movimentacao, conta_id, codigo_cupom, aluno_id)
 VALUES (5, 'RESGATE', '2026-10-02 09:15:00', 60, 'SAIDA', 4, 'CUPOM-ABC123', 4);
+
 -- 6. Carga de exemplo para testar a gestao de vantagens (RF-008)
 INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario) VALUES (5, 'contato@cantinadapuc.com.br', 'senha123', 'EMPRESA');
 INSERT IGNORE INTO empresa_parceira (usuario_id, nome, cnpj) VALUES (5, 'Cantina da PUC', '12.345.678/0001-90');
@@ -60,7 +61,6 @@ INSERT IGNORE INTO vantagem (id, nome, descricao, foto_url, custo_moedas, ativa,
 
 -- 7. RF-011: amplia a coluna de criterios para 1000 caracteres (ddl-auto=update nao altera colunas existentes)
 ALTER TABLE professor MODIFY criterios_transferencia VARCHAR(1000);
-
 
 -- 8. RF-012: garante que a coluna status aceite CANCELADA (caso tenha sido criada como ENUM antes)
 ALTER TABLE solicitacao_transferencia MODIFY status VARCHAR(20);
@@ -84,7 +84,6 @@ VALUES (8, 'pedro.almeida@ufmg.br', 'senha123', 'ALUNO');
 INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
 VALUES (8, 'Pedro Almeida', '888.888.888-88', 'MG-88.888.888', 'Av. Antonio Carlos, 6627', 'Sistemas de Informacao', 2);
 INSERT IGNORE INTO conta (id, saldo_corrente, usuario_id) VALUES (8, 100, 8);
-
 
 -- 9. RF-013: Solicitacao pendente de exemplo para o Professor 1 (Glender) avaliar
 INSERT IGNORE INTO solicitacao_transferencia (id, data_solicitacao, quantidade, status, justificativa, remetente_id, destinatario_id, avaliador_id)
