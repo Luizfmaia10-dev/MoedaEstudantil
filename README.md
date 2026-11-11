@@ -5,6 +5,18 @@ Projeto desenvolvido para a disciplina de **Laboratório de Desenvolvimento de S
 O sistema tem o objetivo de estimular o reconhecimento do mérito estudantil através de uma moeda virtual, que pode ser distribuída por professores aos alunos e trocada por produtos e descontos em empresas parceiras.
 
 ---
+
+## Sumário
+
+- [1. Requisitos do sistema](#1-requisitos-do-sistema)
+- [2. Histórias de Usuário](#2-histórias-de-usuário-user-stories)
+- [3. Modelagem e Diagramas UML](#3-modelagem-e-diagramas-uml)
+- [4. Arquitetura do sistema](#4-arquitetura-do-sistema)
+- [5. Camada de persistência](#5-camada-de-persistência)
+- [6. Resumo para apresentação](#6-resumo-para-apresentação)
+- [Como rodar a aplicação](#-como-rodar-a-aplicação)
+- [Autores e disciplina](#-autores--disciplina)
+
 ## 1. Requisitos do sistema
 
 ### 1.1 Requisitos funcionais (RF):
@@ -91,12 +103,148 @@ Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de
 * Veja os [**diagramas de sequência**](Artefatos/diagramas-sequencia.md)
 
 ---
-## 🛠️ Tecnologias e Arquitetura
+## 4. Arquitetura do sistema
 
-* **Padrão de Projeto / Arquitetura:** Arquitetura MVC.
-* **Persistência de Dados:** Estratégia de acesso ao banco de dados utilizando abordagens como ORM ou Padrão DAO.
-* **Estrutura:** Separação entre front-end e back-end para as operações de comunicação e CRUDs.
-* **Controle de Versão:** Utilização de repositório GitHub para controle do código e modelos UML.
+O sistema segue uma arquitetura em camadas baseada em **MVC (Model–View–Controller)**. Cada camada possui uma responsabilidade definida e depende apenas das camadas necessárias ao fluxo.
+
+| Camada MVC | Implementação no sistema | Responsabilidade |
+| --- | --- | --- |
+| **View** | HTML, CSS e JavaScript em `frontend/` | Apresentar as telas, capturar ações do usuário e consumir a API REST. |
+| **Controller** | Classes em `moedaEstudantil.controller` | Receber requisições HTTP, validar parâmetros básicos, chamar os serviços e devolver DTOs e códigos HTTP. |
+| **Model** | Entidades, DTOs, serviços e repositórios | Representar o domínio, executar regras de negócio e persistir os dados. |
+
+No backend, o Model é subdividido para manter as responsabilidades separadas:
+
+- **DTOs:** definem os dados de entrada e saída da API sem expor diretamente as entidades.
+- **Services:** concentram regras como autenticação, distribuição de moedas, resgate e transferência.
+- **Entities:** representam os objetos persistidos e seus relacionamentos JPA.
+- **Repositories:** abstraem consultas e operações de banco com Spring Data JPA.
+
+O frontend e o backend são distribuídos pela mesma aplicação Spring Boot. As telas chamam endpoints `/api/...` usando `fetch`, e os arquivos estáticos são servidos pelo próprio servidor na porta `8080`.
+
+### 4.1 Fluxo entre as camadas
+
+```mermaid
+flowchart LR
+    U[Usuário] --> V[View<br>HTML, CSS e JavaScript]
+    V -->|HTTP + JSON| C[Controller<br>API REST]
+    C --> S[Service<br>regras de negócio]
+    S --> R[Repository<br>Spring Data JPA]
+    R --> H[Hibernate ORM]
+    H --> DB[(MySQL)]
+    S --> D[DTO de resposta]
+    D --> C
+    C -->|HTTP + JSON| V
+```
+
+Essa organização evita que a interface acesse o banco diretamente. A View conhece somente a API; o Controller conhece os serviços; e os serviços usam os repositórios para consultar ou alterar os dados persistidos.
+
+### 4.2 Exemplo MVC do próprio sistema: resgate de uma vantagem
+
+Quando um aluno troca moedas por uma vantagem, o fluxo real é:
+
+1. **View:** `resgatar-vantagens.html` e `resgatar-vantagens.js` exibem o catálogo. `resgate-api.js` envia `POST /api/alunos/{alunoId}/resgates/{vantagemId}`.
+2. **Controller:** `ResgateVantagemController` recebe os identificadores da URL e delega a operação para `ResgateVantagemService`.
+3. **Model/Service:** o serviço localiza aluno, conta e vantagem; verifica se a vantagem está ativa; valida o custo e o saldo; debita as moedas; gera o cupom; registra a transação; e solicita o envio das notificações.
+4. **Model/Repository:** `AlunoRepository`, `ContaRepository`, `VantagemRepository` e `TransacaoRepository` executam as operações persistentes por meio do Hibernate.
+5. **Banco:** o MySQL atualiza o saldo da conta e grava uma transação do tipo `RESGATE`, relacionada ao aluno e à vantagem.
+6. **Resposta:** o Controller devolve HTTP `201 Created` com um `ResgateResultadoDTO` contendo o código do cupom e o novo saldo. A View atualiza a interface.
+
+Assim, o Controller não calcula saldo e o JavaScript não grava tabelas. A regra fica no Service, enquanto os Repositories isolam o acesso ao banco.
+
+### 4.3 Tecnologias por responsabilidade
+
+| Responsabilidade | Tecnologia |
+| --- | --- |
+| Interface | HTML5, CSS3, JavaScript e GSAP |
+| IA local | Ollama e Qwen2.5 0.5B Instruct |
+| API e aplicação | Java 21 e Spring Boot |
+| Endpoints | Spring Web MVC / REST |
+| Regras de negócio | Services Spring |
+| Persistência | Spring Data JPA e Hibernate |
+| Banco principal | MySQL 8+ |
+| Banco de testes | H2 em memória |
+| Segurança de senhas | BCrypt |
+| Notificações | Spring Mail / SMTP |
+| Testes | JUnit 5, Mockito e Node Test Runner |
+
+## 5. Camada de persistência
+
+A persistência definitiva utiliza **MySQL 8+**. O backend aplica **Jakarta Persistence (JPA)** com **Hibernate ORM**, e o acesso é exposto por interfaces do **Spring Data JPA** que estendem `JpaRepository`.
+
+```mermaid
+flowchart LR
+    S[Service] --> J[JpaRepository]
+    J --> H[Hibernate / JPA]
+    H --> M[(MySQL)]
+```
+
+- As classes de `moedaEstudantil.model` são mapeadas com `@Entity`.
+- As interfaces de `moedaEstudantil.repository` oferecem CRUD, consultas derivadas e consultas específicas.
+- O Hibernate converte alterações em objetos Java para comandos SQL.
+- Em execução normal, a conexão é definida por `DB_URL`, `DB_USER` e `DB_PASSWORD`.
+- `spring.jpa.hibernate.ddl-auto=update` mantém o esquema compatível sem apagar os dados existentes.
+- `data.sql` fornece instituições, usuários e movimentações iniciais para demonstração.
+- O H2 possui escopo de teste e executa em memória; os dados dele desaparecem ao terminar os testes.
+
+### 5.1 Dados persistidos
+
+| Entidade/tabela | Dados mantidos |
+| --- | --- |
+| `instituicao` | Nome das instituições participantes. |
+| `usuario` | E-mail, senha protegida e discriminador do perfil. |
+| `aluno` | Nome, CPF, RG, endereço, curso e instituição. |
+| `professor` | Nome, CPF, departamento, critérios de transferência e instituição. |
+| `empresa_parceira` | Nome e CNPJ da empresa. |
+| `conta` | Usuário proprietário e saldo corrente de moedas. |
+| `vantagem` | Nome, descrição, custo, situação ativa, URL da foto e empresa responsável. |
+| `transacao` | Data, quantidade, entrada/saída, conta e tipo específico: envio, resgate ou transferência. |
+| `solicitacao_transferencia` | Remetente, destinatário, professor avaliador, quantidade, justificativa, situação e avaliação. |
+| `credito_semestral_professor` | Professor, ano, semestre, quantidade e data de cada crédito automático. |
+
+Esses registros permanecem no MySQL após reiniciar a aplicação. Cadastros, saldos, extratos, vantagens, solicitações e créditos semestrais são recuperados pelos repositórios quando o usuário volta ao sistema.
+
+### 5.2 Herança e relacionamentos JPA
+
+- `Usuario` utiliza herança `JOINED`: os campos comuns ficam em `usuario`, enquanto `aluno`, `professor` e `empresa_parceira` armazenam os dados específicos usando o mesmo identificador.
+- `TransacaoGeral` utiliza herança `SINGLE_TABLE`: envios, resgates e transferências ficam na tabela `transacao`, diferenciados por `tipo_transacao`.
+- Uma instituição possui vários alunos e professores (`@ManyToOne` no usuário especializado).
+- Cada usuário possui uma conta, e cada conta mantém várias transações.
+- Uma empresa pode cadastrar várias vantagens.
+- Uma solicitação relaciona dois alunos — remetente e destinatário — e um professor avaliador.
+- Cada crédito semestral pertence a um professor. A restrição única por professor, ano e semestre impede crédito duplicado no mesmo período.
+- Vantagens usam exclusão lógica por meio do campo `ativa`, preservando o histórico de resgates.
+
+### 5.3 Consistência e transações
+
+As operações que alteram mais de um registro são executadas em métodos `@Transactional`. Distribuição, resgate, transferência e crédito semestral são confirmados como uma unidade: se uma etapa lança erro, a transação é revertida e o banco não fica parcialmente atualizado.
+
+Operações monetárias consultam contas com bloqueio pessimista (`PESSIMISTIC_WRITE`, equivalente a `SELECT ... FOR UPDATE`). Isso serializa alterações concorrentes no mesmo saldo e reduz o risco de duas requisições gastarem as mesmas moedas.
+
+Consultas que não modificam dados utilizam `@Transactional(readOnly = true)`. Senhas novas são armazenadas com BCrypt; credenciais legadas da carga inicial são migradas para BCrypt após o primeiro login válido.
+
+### 5.4 O que não fica armazenado no banco
+
+- O navegador mantém apenas `id`, `nome`, `email` e `perfil` da sessão atual em `sessionStorage`. Isso serve para navegação da interface e não substitui a persistência do backend.
+- O arquivo binário da foto de uma vantagem fica no diretório configurado por `app.upload-dir` (`uploads` por padrão). O banco persiste somente `fotoUrl`.
+- E-mails são enviados pelo servidor SMTP configurado; o projeto não mantém uma caixa de saída persistente.
+- Quando o sistema é iniciado explicitamente com o perfil de teste e H2 em memória, os dados são temporários. Na execução descrita neste README, o MySQL é a fonte persistente.
+
+> Limitação atual: a interface usa a identidade mínima da sessão para montar rotas, mas a autorização completa de todos os endpoints por token ou sessão autenticada no servidor ainda está fora do escopo desta entrega.
+
+## 6. Resumo para apresentação
+
+Uma divisão objetiva para os slides é:
+
+1. **Arquitetura:** “O sistema utiliza MVC em camadas. A View é o frontend; os Controllers expõem a API REST; e o Model reúne DTOs, Services, entidades e Repositories.”
+2. **Fluxo MVC:** apresente o resgate de vantagem: botão na View → requisição HTTP → Controller → Service → Repository → MySQL → DTO de resposta.
+3. **Persistência:** “Usamos JPA/Hibernate como ORM, Spring Data JPA para os repositórios e MySQL para armazenamento definitivo. H2 é utilizado somente em testes.”
+4. **Dados:** destaque usuários e perfis, instituições, contas e saldos, vantagens, transações, solicitações e créditos semestrais.
+5. **Consistência:** explique que `@Transactional` evita gravações parciais e que o bloqueio pessimista protege o saldo contra alterações concorrentes.
+
+Frase de encerramento sugerida:
+
+> A interface nunca acessa o banco diretamente. Cada requisição passa pelo Controller, pelas regras do Service e pelos Repositories; o Hibernate transforma essas operações em SQL e o MySQL mantém os dados do sistema.
 
 ---
 ## 🚀 Como Rodar a Aplicação
@@ -104,6 +252,16 @@ Durante o Processo de Desenvolvimento, foram definidos os seguintes artefatos de
 ### 1. Pré-requisitos
 * **Java JDK 21** instalado e configurado no `PATH`.
 * **MySQL 8+** em execução local (ou remoto).
+* **Ollama** para usar o assistente opcional de transferência por IA.
+
+Instale o Ollama e baixe o modelo pequeno utilizado pelo projeto:
+
+```powershell
+winget install --id Ollama.Ollama -e
+ollama pull qwen2.5:0.5b-instruct
+```
+
+O modelo roda localmente, não exige chave de API e não envia a conversa para serviços externos. Sem o Ollama ou sem o modelo instalado, o backend usa um interpretador local determinístico para pedidos comuns; o formulário manual também continua disponível.
 
 ### 2. Configuração do Banco de Dados
 1. Crie um banco de dados vazio no MySQL:
@@ -140,15 +298,69 @@ Para executar a suíte de **testes automatizados (JUnit 5 + Mockito)**:
 .\mvnw.cmd test
 ```
 
+### 3.1 Configuração de e-mail
+
+Os requisitos de notificação usam SMTP. Para desenvolvimento, execute um servidor local na porta `1025` (por exemplo, MailHog/Mailpit) ou configure as variáveis abaixo para seu provedor:
+
+```env
+MAIL_HOST=localhost
+MAIL_PORT=1025
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_AUTH=false
+MAIL_STARTTLS=false
+MAIL_FROM=nao-responda@moeda-estudantil.local
+```
+
+Sem um servidor SMTP disponível, a operação principal é preservada e a falha da notificação fica registrada no log da aplicação.
+
+### 3.2 Assistente local de transferência
+
+O botão **Transferir com IA** aceita pedidos em português, como “mande vinte moedas para Ana”. O backend consulta o Ollama apenas para extrair destinatário, quantidade, professor e justificativa; nomes e permissões são sempre conferidos no banco.
+
+Configuração opcional:
+
+```env
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:0.5b-instruct
+OLLAMA_TIMEOUT=8s
+```
+
+A interpretação não movimenta moedas nem grava conversa. Somente após o aluno revisar e confirmar, o sistema chama o fluxo normal e persiste uma `solicitacao_transferencia` pendente para avaliação do professor.
+
 ### 4. Acessando o Frontend
 Com o backend em execução, você pode acessar a interface diretamente pelo navegador (servida pelo próprio Spring Boot) ou abrir a pasta `frontend/` com uma extensão como o *Live Server*:
 
-* **Menu Central de Desenvolvimento (todas as funcionalidades por perfil):**
-  `http://localhost:8080/dev-menu.html`
-* **Portal do Aluno (Cadastro / Login):**
-  `http://localhost:8080/index.html`
-* **Portal da Empresa Parceira (Cadastro / Login):**
-  `http://localhost:8080/empresa.html`
+* **Landing e acesso por perfil:** `http://localhost:8080/index.html`
+* **Painel após autenticação:** `http://localhost:8080/painel.html`
+* **Cadastro e perfil do aluno:** `http://localhost:8080/aluno.html`
+* **Cadastro e perfil da empresa:** `http://localhost:8080/empresa.html`
+
+Contas de demonstração persistidas:
+
+| Perfil | E-mail | Senha |
+| --- | --- | --- |
+| Aluno | `aluno.teste@sga.pucminas.br` | `senha123` |
+| Professor | `glender.bras@pucminas.br` | `senha123` |
+| Empresa | `contato@cantinadapuc.com.br` | `senha123` |
+
+O primeiro login válido migra automaticamente senhas legadas em texto simples para BCrypt.
+
+O login valida credenciais persistidas pela API; o navegador mantém apenas os dados mínimos da sessão atual em `sessionStorage`. Professores são pré-cadastrados, e o cadastro público está disponível somente para aluno e empresa. A autorização completa de todas as APIs por identidade autenticada permanece fora do escopo desta entrega.
+
+### 4.1 Desenvolvimento do frontend
+
+Edite somente a pasta `frontend/`, que é a fonte canônica. Antes de executar ou versionar mudanças, replique os arquivos para os recursos estáticos do Spring:
+
+```powershell
+.\scripts\sync-frontend.ps1
+```
+
+Para apenas verificar se as duas árvores estão idênticas:
+
+```powershell
+.\scripts\test-frontend-sync.ps1
+```
 
 ---
 ## 👥 Autores / Disciplina

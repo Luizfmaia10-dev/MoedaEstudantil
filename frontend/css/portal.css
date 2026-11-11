@@ -1,0 +1,78 @@
+/* Cadastro e conta compartilham a identidade da landing, com os formulários existentes. */
+.account-portal {
+  --forest: #163300;
+  --lime: #9fe870;
+  --spruce: #054d28;
+  --mist: #e2f6d5;
+  --fog: #e8ebe6;
+  --primary-yellow: var(--lime);
+  --primary-light: #b1f08c;
+  --primary-subtle: var(--mist);
+  --primary-bg: #f4f6f2;
+  --primary-deep: var(--spruce);
+  --border-yellow: #c6d6bc;
+  --bg-page: var(--fog);
+  --border-subtle: #c6d0c0;
+  --text-main: #0e0f0c;
+  --text-secondary: #454745;
+  --text-muted: #52604b;
+  --radius-lg: 1.75rem;
+  --shadow-md: 0 .5rem 1.5rem rgb(22 51 0 / .08);
+  --shadow-lg: 0 1rem 2.5rem rgb(22 51 0 / .16);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  min-width: 20rem;
+}
+.account-portal :focus-visible { outline: 3px solid var(--spruce); outline-offset: 3px; }
+.account-portal .navbar { background: var(--forest); border: 0; }
+.account-portal .navbar :focus-visible { outline-color: var(--lime); }
+.account-portal .nav-container { max-width: 75rem; padding: 1rem; gap: 1rem; flex-direction: column; align-items: stretch; }
+.account-portal .brand-wrapper { min-width: 0; }
+.account-portal .brand-title { color: #fff; font-weight: 900; letter-spacing: -.04em; font-size: clamp(1rem, 4vw, 1.25rem); }
+.account-portal .brand-title span { color: var(--lime); }
+.account-portal .brand-subtitle { color: var(--mist); font-size: .875rem; }
+.portal-monogram, .account-portal .profile-coin-icon { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--lime); color: var(--forest); font-size: 1.25rem; font-weight: 900; letter-spacing: -.1em; }
+.portal-nav-actions, .account-portal .user-nav-actions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.account-portal .user-greeting { color: var(--mist); overflow-wrap: anywhere; }
+.account-portal .user-greeting strong { color: #fff; }
+.account-portal .main-wrapper { padding: 1.5rem 1rem 3rem; }
+.account-portal .auth-card, .account-portal .profile-card { border-width: 1px; padding: 1.25rem; }
+.account-portal .auth-tabs { border: 0; border-radius: 1.5rem; gap: .25rem; }
+.account-portal .auth-tab-btn { min-height: 3rem; padding: .65rem .5rem; font-size: .875rem; }
+.account-portal .auth-tab-btn.active { background: var(--forest); color: #fff; }
+.account-portal .card-intro h2 { font-size: clamp(1.65rem, 5vw, 2.25rem); letter-spacing: -.05em; line-height: 1.15; }
+.account-portal .card-intro p, .account-portal .profile-header-title p { font-size: 1rem; margin-top: .75rem; }
+.account-portal .form-grid, .account-portal .profile-details-grid { grid-template-columns: minmax(0, 1fr); }
+.account-portal .form-group.full-width, .account-portal .profile-detail-item.full-width { grid-column: auto; }
+.account-portal .form-group { min-width: 0; }
+.account-portal .form-label { font-size: .875rem; }
+.account-portal .form-control { min-width: 0; min-height: 3rem; font: inherit; border-color: #889680; border-radius: .75rem; }
+.account-portal .form-control:focus { border-color: var(--spruce); box-shadow: none; }
+.account-portal .btn-primary { background: var(--lime); color: var(--forest); border-color: var(--lime); box-shadow: none; }
+.account-portal .btn-primary:hover { background: #b1f08c; }
+.account-portal .btn-primary, .account-portal .btn-secondary, .account-portal .btn-danger, .account-portal .btn-logout { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; font-size: .9375rem; text-decoration: none; }
+.account-portal .btn-secondary { border-color: var(--spruce); }
+.account-portal .navbar .btn-secondary { color: var(--lime); border-color: var(--lime); background: transparent; }
+.account-portal .navbar .btn-secondary:hover { color: var(--forest); background: var(--lime); }
+.account-portal .btn-logout { background: var(--lime); color: var(--forest); border-color: var(--lime); }
+.account-portal .btn-logout:hover { background: #b1f08c; }
+.account-portal .profile-header-title { min-width: 0; }
+.account-portal .profile-coin-icon { background: var(--forest); color: var(--lime); }
+.account-portal .detail-value.highlight-badge { color: var(--spruce); }
+.account-portal .card-footer-actions, .account-portal .modal-footer { flex-wrap: wrap; }
+.account-portal .btn-close { min-width: 2.75rem; min-height: 2.75rem; }
+.account-portal .toast-container { max-width: calc(100% - 2rem); right: 1rem; }
+.account-portal .footer { background: var(--forest); color: var(--mist); border: 0; font-size: .875rem; padding: 1.5rem; }
+@media (min-width: 40rem) {
+  .account-portal .nav-container { padding: 1rem 1.5rem; }
+  .account-portal .main-wrapper { padding: 3rem 1.5rem; }
+  .account-portal .auth-card, .account-portal .profile-card { padding: 2rem; }
+  .account-portal .form-grid, .account-portal .profile-details-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .account-portal .form-group.full-width, .account-portal .profile-detail-item.full-width { grid-column: span 2; }
+}
+@media (min-width: 64rem) {
+  .account-portal .nav-container { flex-direction: row; align-items: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .account-portal *, .account-portal *::before, .account-portal *::after { transition: none !important; }
+}

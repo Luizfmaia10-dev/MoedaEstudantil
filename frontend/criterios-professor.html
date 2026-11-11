@@ -6,6 +6,7 @@
   <title>Moeda Estudantil - Critérios de Transferência</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/interactions.css">
   <style>
     .crit-card { max-width: 680px; margin: 2rem auto; background: var(--bg-white); border: 1px solid var(--border-yellow); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; }
     .crit-card h1 { font-size: 1.15rem; color: var(--primary-deep); }
@@ -15,7 +16,7 @@
     .contador { text-align: right; font-size: .78rem; color: var(--text-muted); margin-top: .25rem; }
     .contador.excedido { color: var(--color-danger); font-weight: 600; }
     .rodape { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; gap: 1rem; }
-    .btn-salvar { background: var(--primary-yellow); color: #fff; border: none; border-radius: var(--radius-md); padding: .6rem 1.3rem; font-weight: 600; cursor: pointer; }
+    .btn-salvar { background: var(--primary-yellow); color: #163300; border: none; border-radius: var(--radius-md); padding: .6rem 1.3rem; font-weight: 700; cursor: pointer; }
     .btn-salvar:disabled { opacity: .6; cursor: not-allowed; }
     #msg { font-size: .88rem; }
     #msg.ok { color: var(--color-success); }
@@ -26,13 +27,14 @@
 <body>
   <header class="navbar">
     <div class="nav-container">
-      <a href="dev-menu.html" class="brand-wrapper" title="Moeda Estudantil">
+      <a href="painel.html" class="brand-wrapper" title="Voltar ao meu painel">
         <div class="brand-logo-container"><img src="assets/logo.svg" alt="Moeda Estudantil" class="brand-logo"></div>
         <div class="brand-text">
           <span class="brand-title">Moeda<span>Estudantil</span></span>
           <span class="brand-subtitle">Portal do Professor</span>
         </div>
       </a>
+      <a href="painel.html" class="back-button" aria-label="Voltar ao painel">← <span>Voltar</span></a>
     </div>
   </header>
 
@@ -56,6 +58,8 @@
     </section>
   </main>
 
+  <script src="js/core/http.js"></script>
+  <script src="js/core/format.js"></script>
   <script src="js/criterios-api.js"></script>
   <script src="js/criterios-professor.js"></script>
 </body>

@@ -181,16 +181,12 @@ public class SolicitacaoTransferenciaService {
         Conta contaRemetente = primeiroId.equals(remId) ? primeira : segunda;
         Conta contaDestinatario = primeiroId.equals(destId) ? primeira : segunda;
 
-        int saldoRem = contaRemetente.getSaldoCorrente() == null ? 0 : contaRemetente.getSaldoCorrente();
-        int saldoDest = contaDestinatario.getSaldoCorrente() == null ? 0 : contaDestinatario.getSaldoCorrente();
+        int saldoRem = MovimentacaoSaldo.saldo(contaRemetente);
         int qtd = s.getQuantidade();
 
-        if (saldoRem < qtd) {
-            throw erro("Saldo atual do aluno remetente (" + saldoRem + " moedas) e insuficiente para concluir a transferencia.");
-        }
-
-        contaRemetente.setSaldoCorrente(saldoRem - qtd);
-        contaDestinatario.setSaldoCorrente(saldoDest + qtd);
+        MovimentacaoSaldo.transferir(contaRemetente, contaDestinatario, qtd,
+                "Saldo atual do aluno remetente (" + saldoRem
+                        + " moedas) e insuficiente para concluir a transferencia.");
         contaRepository.save(contaRemetente);
         contaRepository.save(contaDestinatario);
 
@@ -253,7 +249,7 @@ public class SolicitacaoTransferenciaService {
     }
 
     private SaldoDisponivelDTO calcularSaldo(Long alunoId, Conta conta) {
-        int corrente = conta.getSaldoCorrente() == null ? 0 : conta.getSaldoCorrente();
+        int corrente = MovimentacaoSaldo.saldo(conta);
         Long pendentes = solicitacaoRepository
                 .somarQuantidadePorRemetenteEStatus(alunoId, StatusSolicitacaoTransferencia.PENDENTE);
         int pend = pendentes == null ? 0 : pendentes.intValue();

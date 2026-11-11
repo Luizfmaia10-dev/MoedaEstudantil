@@ -14,17 +14,6 @@ const STATUS_ROTULO = {
 const $ = id => document.getElementById(id);
 let professorId = null;
 
-function escapeHtml(texto) {
-  const div = document.createElement('div');
-  div.textContent = texto ?? '';
-  return div.innerHTML;
-}
-
-function formatarData(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-}
-
 function mostrarErroGeral(err) {
   $('loading').style.display = 'none';
   $('conteudo').style.display = 'none';
@@ -54,12 +43,12 @@ function renderizar(lista) {
   ul.innerHTML = lista.map(s => {
     const pendente = s.status === 'PENDENTE';
     const just = s.justificativa
-      ? `<div class="bloco-texto"><strong>Justificativa do aluno:</strong> ${escapeHtml(s.justificativa)}</div>`
+      ? `<div class="bloco-texto"><strong>Justificativa do aluno:</strong> ${AppFormat.escapeHtml(s.justificativa)}</div>`
       : '<div class="bloco-texto"><em>Aluno não informou justificativa.</em></div>';
 
-    const avaliacaoData = s.dataAvaliacao ? ` · Avaliada em ${formatarData(s.dataAvaliacao)}` : '';
+    const avaliacaoData = s.dataAvaliacao ? ` · Avaliada em ${AppFormat.date(s.dataAvaliacao)}` : '';
     const parecerSalvo = !pendente && s.observacaoAvaliador
-      ? `<div class="bloco-texto"><strong>Sua explicação:</strong> ${escapeHtml(s.observacaoAvaliador)}</div>`
+      ? `<div class="bloco-texto"><strong>Sua explicação:</strong> ${AppFormat.escapeHtml(s.observacaoAvaliador)}</div>`
       : '';
 
     const controles = pendente ? `
@@ -74,15 +63,15 @@ function renderizar(lista) {
         <div class="aval-linha1">
           <div>
             <div class="aval-Partes">
-              ${escapeHtml(s.remetenteNome)} <span>(${escapeHtml(s.remetenteCurso || '')})</span>
+              ${AppFormat.escapeHtml(s.remetenteNome)} <span>(${AppFormat.escapeHtml(s.remetenteCurso || '')})</span>
               &rarr;
-              ${escapeHtml(s.destinatarioNome)} <span>(${escapeHtml(s.destinatarioCurso || '')})</span>
+              ${AppFormat.escapeHtml(s.destinatarioNome)} <span>(${AppFormat.escapeHtml(s.destinatarioCurso || '')})</span>
             </div>
-            <div class="aval-meta">Solicitada em ${formatarData(s.dataSolicitacao)}${avaliacaoData}</div>
+            <div class="aval-meta">Solicitada em ${AppFormat.date(s.dataSolicitacao) || '—'}${avaliacaoData}</div>
           </div>
           <div class="aval-direita">
             <span class="aval-valor">${s.quantidade} moedas</span>
-            <span class="badge-status ${escapeHtml(s.status)}">${escapeHtml(STATUS_ROTULO[s.status] || s.status)}</span>
+            <span class="badge-status ${AppFormat.escapeHtml(s.status)}">${AppFormat.escapeHtml(STATUS_ROTULO[s.status] || s.status)}</span>
           </div>
         </div>
         ${just}

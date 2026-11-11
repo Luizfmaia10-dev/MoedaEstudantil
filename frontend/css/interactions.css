@@ -1,0 +1,43 @@
+:where(button:not(:disabled), a.button, a.text-link, a[class*="btn-"], [role="button"]:not([aria-disabled="true"]), .action-card) {
+  transition-property: transform, box-shadow, background-color, border-color, color, filter;
+  transition-duration: .24s;
+  transition-timing-function: cubic-bezier(.2, .8, .2, 1);
+  will-change: transform;
+}
+
+:where(button:disabled, [aria-disabled="true"]) {
+  transition: none;
+  transform: none;
+}
+
+:where(.button, .text-link, [class*="btn-"]) > span[aria-hidden="true"] {
+  display: inline-block;
+  transition: transform .24s cubic-bezier(.2, .8, .2, 1);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :where(button:not(:disabled), a.button, a.text-link, a[class*="btn-"], [role="button"]:not([aria-disabled="true"]), .action-card):hover {
+    transform: translateY(-.16rem);
+    filter: brightness(1.035) saturate(1.04);
+  }
+
+  :where(button:not(:disabled), a.button, a[class*="btn-"], [role="button"]:not([aria-disabled="true"])):hover {
+    box-shadow: 0 .75rem 1.5rem rgb(22 51 0 / .16);
+  }
+
+  :where(.button, .text-link, [class*="btn-"]):hover > span[aria-hidden="true"] {
+    transform: translate(.18rem, -.12rem);
+  }
+
+  :where(button:not(:disabled), a.button, a.text-link, a[class*="btn-"], [role="button"]:not([aria-disabled="true"]), .action-card):active {
+    transform: translateY(0) scale(.985);
+    transition-duration: .08s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a.button, a.text-link, a[class*="btn-"], [role="button"], .action-card),
+  :where(.button, .text-link, [class*="btn-"]) > span[aria-hidden="true"] {
+    transition-duration: .01ms;
+  }
+}

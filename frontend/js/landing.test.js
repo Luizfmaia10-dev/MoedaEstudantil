@@ -1,0 +1,300 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { createLoginState, initializeLanding, calculateOrbitFrame, initializeHeroMotion } = require('./landing.js');
+const { createSessionStore } = require('./core/session.js');
+const routes = require('./core/routes.js');
+
+test('órbita converte o progresso do scroll em posição, profundidade e rotação reversíveis', () => {
+  const front = calculateOrbitFrame({ progress: .25, phase: 0, radiusX: 100, radiusY: 50, spin: 1 });
+  assert.ok(Math.abs(front.x) < .001);
+  assert.equal(front.y, 50);
+  assert.equal(front.scale, 1);
+  assert.equal(front.opacity, 1);
+  assert.equal(front.zIndex, 30);
+  assert.equal(front.rotation, 180);
+
+  const back = calculateOrbitFrame({ progress: .75, phase: 0, radiusX: 100, radiusY: 50, spin: 1 });
+  assert.ok(Math.abs(back.x) < .001);
+  assert.equal(back.y, -50);
+  assert.equal(back.scale, .7);
+  assert.equal(back.opacity, .58);
+  assert.equal(back.zIndex, 10);
+  assert.equal(back.rotation, 540);
+
+  const firstPass = calculateOrbitFrame({ progress: .25, phase: Math.PI, radiusX: 100, radiusY: 50, spin: -1 });
+  const laterPass = calculateOrbitFrame({ progress: .75, phase: Math.PI, radiusX: 100, radiusY: 50, spin: -1 });
+  const returnedPass = calculateOrbitFrame({ progress: .25, phase: Math.PI, radiusX: 100, radiusY: 50, spin: -1 });
+  assert.notDeepEqual(laterPass, firstPass);
+  assert.deepEqual(returnedPass, firstPass);
+});
+
+test('hero liga as moedas ao ScrollTrigger com scrub e atualiza o globo', () => {
+  function style() {
+    const values = new Map();
+    return { values, setProperty(name, value) { values.set(name, String(value)); }, removeProperty(name) { values.delete(name); } };
+  }
+  const coins = [
+    { dataset: { orbitPhase: '0', orbitX: '.34', orbitY: '.19', orbitSpin: '1' }, style: style() },
+    { dataset: { orbitPhase: '3.141592653589793', orbitX: '.42', orbitY: '.26', orbitSpin: '-1' }, style: style() }
+  ];
+  const stage = {
+    dataset: {}, style: style(),
+    querySelectorAll(selector) { return selector === '[data-orbit-coin]' ? coins : []; },
+    getBoundingClientRect() { return { width: 500, height: 400 }; }
+  };
+  const ScrollTrigger = { name: 'ScrollTrigger' };
+  let tweenTarget;
+  let tweenOptions;
+  const gsap = {
+    registerPlugin(plugin) { assert.equal(plugin, ScrollTrigger); },
+    to(target, options) { tweenTarget = target; tweenOptions = options; return { kill() {} }; }
+  };
+
+  initializeHeroMotion({ stage, gsap, ScrollTrigger, reducedMotion: false });
+  assert.equal(tweenOptions.scrollTrigger.trigger, stage);
+  assert.equal(tweenOptions.scrollTrigger.scrub, .65);
+  assert.equal(tweenOptions.scrollTrigger.start, 'top bottom');
+  assert.equal(tweenOptions.scrollTrigger.end, 'bottom top');
+
+  tweenTarget.progress = .25;
+  tweenOptions.onUpdate();
+  assert.equal(stage.style.values.get('--globe-scroll-spin'), '12deg');
+  assert.match(coins[0].style.values.get('--orbit-x'), /^0(?:\.0+)?px$/);
+  assert.equal(coins[0].style.values.get('--orbit-y'), '76px');
+  assert.equal(coins[0].style.values.get('--orbit-scale'), '1');
+  assert.equal(coins[0].style.zIndex, '30');
+});
+
+test('movimento reduzido mantém uma composição estática sem criar ScrollTrigger', () => {
+  const values = new Map();
+  const coin = { dataset: { orbitPhase: '0', orbitX: '.3', orbitY: '.2', orbitSpin: '1' }, style: { setProperty(name, value) { values.set(name, value); } } };
+  const stage = {
+    dataset: {}, style: { setProperty() {} },
+    querySelectorAll() { return [coin]; },
+    getBoundingClientRect() { return { width: 400, height: 300 }; }
+  };
+  let animated = false;
+  const result = initializeHeroMotion({ stage, gsap: { to() { animated = true; } }, ScrollTrigger: {}, reducedMotion: true });
+  assert.equal(animated, false);
+  assert.equal(stage.dataset.motion, 'reduced');
+  assert.equal(values.get('--orbit-scale'), '1');
+  assert.equal(result, null);
+});
+
+test('foco mantém contraste nas superfícies claras, forest, lima e nos controles do diálogo', t => {
+  const { readFileSync } = require('node:fs');
+  const { resolve } = require('node:path');
+  const { pathToFileURL } = require('node:url');
+  const { browserResult, contrastRatio } = require('../../test-support/chromium.cjs');
+  const stylesheet = pathToFileURL(resolve(__dirname, '../css/landing.css')).href;
+  const page = readFileSync(resolve(__dirname, '../index.html'), 'utf8')
+    .replace('css/landing.css', stylesheet).replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+  const focuses = browserResult(t, page.replace('</body>', `<pre id="test-result"></pre>
+    <script>
+      function inspect(selector) {
+        const control = document.querySelector(selector);
+        control.focus();
+        const style = getComputedStyle(control);
+        let surface = control.parentElement;
+        while (surface.parentElement && getComputedStyle(surface).backgroundColor === 'rgba(0, 0, 0, 0)') surface = surface.parentElement;
+        return { selector, visible: control.matches(':focus-visible'), outline: style.outlineColor,
+          width: style.outlineWidth, style: style.outlineStyle, background: getComputedStyle(surface).backgroundColor };
+      }
+      const results = ['.site-header .brand', '#mainNav a', '.header-login', '.hero .button--primary',
+        '.hero .text-link', '.community-strip a', '.audience-card .text-link', '.partner-section .button',
+        '[data-faq-toggle]', '.site-footer a'].map(inspect);
+      document.querySelector('dialog').showModal();
+      results.push(...['.dialog-close', '.profile-switcher button', '#loginEmail', '#loginPassword', '#loginSubmit', '#signupLink'].map(inspect));
+      document.getElementById('test-result').textContent = JSON.stringify(results);
+    </script></body>`));
+  if (!focuses) return;
+  assert.equal(focuses.length, 16);
+  for (const focus of focuses) {
+    assert.equal(focus.visible, true, focus.selector);
+    assert.equal(focus.style, 'solid', focus.selector);
+    assert.ok(parseFloat(focus.width) >= 3, focus.selector);
+    const contrast = contrastRatio(focus.outline, focus.background);
+    assert.ok(contrast >= 3, `${focus.selector}: indicador de foco precisa de contraste 3:1; encontrado ${contrast.toFixed(2)}:1.`);
+  }
+});
+
+test('hero renderiza globo 3D e três moedas em órbitas responsivas', t => {
+  const { readFileSync } = require('node:fs');
+  const { resolve } = require('node:path');
+  const { pathToFileURL } = require('node:url');
+  const { browserResult } = require('../../test-support/chromium.cjs');
+  const stylesheet = pathToFileURL(resolve(__dirname, '../css/landing.css')).href;
+  const page = readFileSync(resolve(__dirname, '../index.html'), 'utf8')
+    .replace('css/landing.css', stylesheet).replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+  const result = browserResult(t, page.replace('</body>', `<pre id="test-result"></pre><script>
+    const globe = document.querySelector('[data-world-globe]');
+    const coins = [...document.querySelectorAll('[data-orbit-coin]')];
+    const stage = document.querySelector('.coin-stage');
+    document.getElementById('test-result').textContent = JSON.stringify({
+      globe: globe ? getComputedStyle(globe).borderRadius : null,
+      coins: coins.length,
+      coinPosition: coins[0] ? getComputedStyle(coins[0]).position : null,
+      stageOverflow: stage ? getComputedStyle(stage).overflowX : null,
+      overflow: document.documentElement.scrollWidth > innerWidth
+    });
+  </script></body>`));
+  if (!result) return;
+  assert.equal(result.globe, '50%');
+  assert.equal(result.coins, 3);
+  assert.equal(result.coinPosition, 'absolute');
+  assert.equal(result.stageOverflow, 'clip');
+  assert.equal(result.overflow, false);
+});
+
+test('professor nunca recebe link de cadastro', () => {
+  assert.deepEqual(createLoginState('PROFESSOR'), { perfil: 'PROFESSOR', label: 'Professor', cadastroHref: null });
+});
+test('aluno e empresa recebem seus destinos de cadastro', () => {
+  assert.equal(createLoginState('ALUNO').cadastroHref, 'aluno.html?tab=cadastro');
+  assert.equal(createLoginState('EMPRESA').cadastroHref, 'empresa.html?tab=cadastro');
+});
+test('perfil desconhecido e propriedades herdadas são recusados', () => {
+  for (const profile of ['ADMIN', 'constructor', '__proto__', null]) {
+    assert.throws(() => createLoginState(profile), /Perfil inválido/);
+  }
+});
+
+function fixture({ login = async () => ({ id: 7, nome: 'Ana', email: 'ana@exemplo.com', perfil: 'ALUNO' }), search = '' } = {}) {
+  function element(dataset = {}) {
+    const handlers = {};
+    return {
+      dataset, attributes: {}, hidden: false, disabled: false, value: '', textContent: '', open: false, style: { setProperty() {}, removeProperty() {} },
+      setAttribute(name, value) { this.attributes[name] = String(value); },
+      getAttribute(name) { return this.attributes[name]; },
+      removeAttribute(name) { delete this.attributes[name]; },
+      addEventListener(name, handler) { handlers[name] = handler; },
+      emit(name, event = {}) { return handlers[name]?.({ target: this, preventDefault() {}, ...event }); },
+      focus() { this.focused = true; },
+      showModal() { this.open = true; },
+      close() { this.open = false; this.emit('close'); },
+      getBoundingClientRect() { return { left: 20, top: 20, right: 400, bottom: 500, width: 380, height: 480 }; }
+    };
+  }
+  const nodes = Object.fromEntries(['loginDialog', 'loginTitle', 'loginForm', 'loginEmail', 'loginPassword', 'loginError', 'loginSubmit', 'signupLink', 'closeLogin', 'menuToggle', 'mainNav', 'answer-1'].map(id => [id, element()]));
+  nodes.menuToggle.setAttribute('aria-expanded', 'false');
+  const openers = [element(), element({ profile: 'EMPRESA' })];
+  const profiles = ['ALUNO', 'PROFESSOR', 'EMPRESA'].map(profile => element({ profile }));
+  const faq = element();
+  faq.setAttribute('aria-expanded', 'false');
+  faq.setAttribute('aria-controls', 'answer-1');
+  nodes['answer-1'].hidden = true;
+  const navLink = element();
+  const document = {
+    getElementById: id => nodes[id],
+    querySelector: () => null,
+    querySelectorAll: selector => ({ '[data-open-login]': openers, '.profile-switcher [data-profile]': profiles, '[data-faq-toggle]': [faq], '#mainNav a': [navLink] })[selector] || []
+  };
+  const storage = new Map();
+  const sessionStore = createSessionStore({ getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key) });
+  const location = { search, assign(href) { this.destination = href; } };
+  initializeLanding({ document, location, authApi: { login }, sessionStore, routes });
+  return { nodes, openers, profiles, faq, navLink, sessionStore, location };
+}
+
+test('abre parceiro, alterna perfil e remove o href de cadastro do professor', () => {
+  const f = fixture();
+  f.openers[1].emit('click');
+  assert.equal(f.nodes.loginDialog.open, true);
+  assert.equal(f.profiles[2].getAttribute('aria-pressed'), 'true');
+  assert.equal(f.nodes.signupLink.getAttribute('href'), 'empresa.html?tab=cadastro');
+  f.profiles[1].emit('click');
+  assert.equal(f.nodes.signupLink.hidden, true);
+  assert.equal(f.nodes.signupLink.getAttribute('href'), undefined);
+  assert.equal(f.profiles[2].getAttribute('aria-pressed'), 'false');
+  f.profiles[0].emit('click');
+  assert.equal(f.nodes.signupLink.hidden, false);
+  assert.equal(f.nodes.signupLink.getAttribute('href'), 'aluno.html?tab=cadastro');
+});
+
+test('troca efetiva de perfil limpa senha e erro, mantendo e-mail e senha ao reselecionar o mesmo perfil', () => {
+  const f = fixture();
+  f.nodes.loginEmail.value = 'ana@exemplo.com';
+  f.nodes.loginPassword.value = 'senha-do-aluno';
+  f.profiles[0].emit('click');
+  assert.equal(f.nodes.loginPassword.value, 'senha-do-aluno');
+  f.nodes.loginError.textContent = 'Erro anterior';
+  f.profiles[1].emit('click');
+  assert.equal(f.nodes.loginPassword.value, '');
+  assert.equal(f.nodes.loginEmail.value, 'ana@exemplo.com');
+  assert.equal(f.nodes.loginError.textContent, '');
+  f.nodes.loginPassword.value = 'senha-do-professor';
+  f.openers[1].emit('click');
+  assert.equal(f.nodes.loginPassword.value, '');
+});
+
+test('fecha pelo botão ou backdrop e devolve foco ao acionador', () => {
+  const f = fixture();
+  f.openers[0].emit('click');
+  f.nodes.closeLogin.emit('click');
+  assert.equal(f.nodes.loginDialog.open, false);
+  assert.equal(f.openers[0].focused, true);
+  f.openers[1].emit('click');
+  f.nodes.loginDialog.emit('click', { clientX: 50, clientY: 50 });
+  assert.equal(f.nodes.loginDialog.open, true);
+  f.nodes.loginDialog.emit('click', { clientX: 5, clientY: 5 });
+  assert.equal(f.nodes.loginDialog.open, false);
+});
+
+test('entrada redirecionada abre login e menu/FAQ expõem seus estados', () => {
+  const f = fixture({ search: '?entrar=1' });
+  assert.equal(f.nodes.loginDialog.open, true);
+  f.nodes.menuToggle.emit('click');
+  assert.equal(f.nodes.menuToggle.getAttribute('aria-expanded'), 'true');
+  f.navLink.emit('click');
+  assert.equal(f.nodes.menuToggle.getAttribute('aria-expanded'), 'false');
+  f.faq.emit('click');
+  assert.equal(f.faq.getAttribute('aria-expanded'), 'true');
+  assert.equal(f.nodes['answer-1'].hidden, false);
+  f.faq.emit('click');
+  assert.equal(f.nodes['answer-1'].hidden, true);
+});
+
+test('login usa credenciais e perfil selecionado, salva sessão e só então navega', async () => {
+  let credentials;
+  const f = fixture({ login: async (...args) => {
+    credentials = args;
+    return { id: 12, nome: 'Loja', email: 'loja@exemplo.com', perfil: 'EMPRESA' };
+  } });
+  f.openers[1].emit('click');
+  f.nodes.loginEmail.value = 'loja@exemplo.com';
+  f.nodes.loginPassword.value = 'senha-exata';
+  await f.nodes.loginForm.emit('submit');
+  assert.deepEqual(credentials, ['loja@exemplo.com', 'senha-exata', 'EMPRESA']);
+  assert.equal(f.sessionStore.read().perfil, 'EMPRESA');
+  assert.equal(f.location.destination, 'painel.html');
+  assert.equal(f.nodes.loginSubmit.disabled, false);
+});
+
+test('requisição pendente bloqueia submissão duplicada e mudança de perfil', async () => {
+  let finish;
+  let count = 0;
+  const f = fixture({ login: () => { count += 1; return new Promise(resolve => { finish = resolve; }); } });
+  const pending = f.nodes.loginForm.emit('submit');
+  assert.equal(f.nodes.loginSubmit.disabled, true);
+  assert.ok(f.profiles.every(button => button.disabled));
+  await f.nodes.loginForm.emit('submit');
+  assert.equal(count, 1);
+  finish({ id: 7, nome: 'Ana', email: 'ana@exemplo.com', perfil: 'ALUNO' });
+  await pending;
+  assert.ok(f.profiles.every(button => !button.disabled));
+});
+
+for (const status of [401, 503]) {
+  test(`erro ${status} preserva credenciais, não salva sessão e permite tentar novamente`, async () => {
+    const f = fixture({ login: async () => { throw Object.assign(new Error('<img onerror=alert(1)>'), { status }); } });
+    f.nodes.loginEmail.value = 'ana@exemplo.com';
+    f.nodes.loginPassword.value = 'senha';
+    await f.nodes.loginForm.emit('submit');
+    assert.equal(f.nodes.loginError.textContent, status === 401 ? 'E-mail, senha ou perfil inválido.' : 'A plataforma está indisponível agora. Tente novamente.');
+    assert.equal(f.nodes.loginEmail.value, 'ana@exemplo.com');
+    assert.equal(f.nodes.loginPassword.value, 'senha');
+    assert.equal(f.nodes.loginSubmit.disabled, false);
+    assert.equal(f.sessionStore.read(), null);
+    assert.equal(f.location.destination, undefined);
+  });
+}

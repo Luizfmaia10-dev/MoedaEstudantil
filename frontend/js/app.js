@@ -7,7 +7,8 @@
  * 4. Exclusão da própria conta (Delete)
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let currentProfile = null;
   // Seções Principais
   const authSection = document.getElementById('authSection');
   const profileSection = document.getElementById('profileSection');
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const loginEmail = document.getElementById('loginEmail');
   const loginSenha = document.getElementById('loginSenha');
-  const btnQuickLogin = document.getElementById('btnQuickLogin');
 
   // Cartão de Visualização (Read)
   const viewProfileCard = document.getElementById('viewProfileCard');
@@ -59,23 +59,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Modal de Exclusão (Delete)
   const deleteModal = document.getElementById('deleteModal');
+  const deletePanel = deleteModal.querySelector?.('.modal-container') || deleteModal;
   const btnOpenDeleteModal = document.getElementById('btnOpenDeleteModal');
   const btnCloseDeleteModal = document.getElementById('btnCloseDeleteModal');
   const btnCancelDelete = document.getElementById('btnCancelDelete');
   const btnConfirmDelete = document.getElementById('btnConfirmDelete');
 
   // Inicialização
-  function init() {
-    populateInstituicoes();
+  async function init() {
     setupCpfMask(cadCpf);
     setupCpfMask(editCpf);
     setupEvents();
-    checkAuthStatus();
+    try {
+      await populateInstituicoes();
+    } catch (err) {
+      showToast(err.message || 'Erro ao carregar instituições.', 'danger');
+    }
+    await checkAuthStatus();
   }
 
   // Popula os selects com as instituições pré-cadastradas
-  function populateInstituicoes() {
-    const insts = window.alunoAuthService.getInstituicoes();
+  async function populateInstituicoes() {
+    const insts = await window.alunoAuthService.getInstituicoes();
 
     cadInstituicao.innerHTML = '<option value="" disabled selected>Selecione sua instituição...</option>';
     editInstituicao.innerHTML = '<option value="" disabled selected>Selecione sua instituição...</option>';
@@ -94,10 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Verifica se o aluno já está logado
-  function checkAuthStatus() {
+  async function checkAuthStatus() {
     const aluno = window.alunoAuthService.getAlunoLogado();
     if (aluno) {
-      renderProfileView(aluno);
+      try {
+        renderProfileView(await window.alunoAuthService.getMeusDados());
+      } catch (err) {
+        renderAuthView();
+        showToast(err.message || 'Erro ao carregar seus dados.', 'danger');
+      }
     } else {
       renderAuthView();
     }
@@ -105,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Exibe a tela de login/cadastro
   function renderAuthView() {
+    currentProfile = null;
     authSection.style.display = 'flex';
     profileSection.style.display = 'none';
     userNavActions.style.display = 'none';
@@ -112,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Exibe a tela com os dados do próprio aluno
   function renderProfileView(aluno) {
+    currentProfile = aluno;
     authSection.style.display = 'none';
     profileSection.style.display = 'flex';
     userNavActions.style.display = 'flex';
@@ -185,29 +197,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const aluno = await window.alunoAuthService.login(email, senha);
         showToast('Login realizado com sucesso!', 'success');
         loginForm.reset();
-        renderProfileView(aluno);
+        window.location.assign(window.AppRoutes.dashboard(aluno));
       } catch (err) {
         showToast(err.message || 'E-mail ou senha incorretos.', 'danger');
       }
     });
 
-    // Teste Rápido de Login
-    if (btnQuickLogin) {
-      btnQuickLogin.addEventListener('click', async () => {
-        try {
-          const aluno = await window.alunoAuthService.login('caio.santos@sga.pucminas.br', '123');
-          showToast('Logado com conta de teste!', 'success');
-          renderProfileView(aluno);
-        } catch (err) {
-          showToast('Erro no login de teste.', 'danger');
-        }
-      });
-    }
-
     // 3. EDITAR MEUS DADOS (UPDATE)
     btnOpenEdit.addEventListener('click', () => {
-      const aluno = window.alunoAuthService.getAlunoLogado();
-      if (!aluno) return;
+      const aluno = currentProfile;
+      if (!aluno || !window.alunoAuthService.getAlunoLogado()) return;
 
       editNome.value = aluno.nome || '';
       editEmail.value = aluno.email || '';
@@ -252,17 +251,20 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Seus dados foram atualizados com sucesso!', 'success');
         renderProfileView(atualizado);
       } catch (err) {
-        showToast('Erro ao atualizar dados.', 'danger');
+        showToast(err.message || 'Erro ao atualizar dados.', 'danger');
       }
     });
 
     // 4. EXCLUIR MINHA CONTA (DELETE)
     btnOpenDeleteModal.addEventListener('click', () => {
-      deleteModal.classList.add('active');
+      if (window.modalGsap) window.modalGsap.openOverlay(deleteModal, deletePanel, btnOpenDeleteModal);
+      else deleteModal.classList.add('active');
     });
 
     const fecharModalExclusao = () => {
+      if (window.modalGsap) return window.modalGsap.closeOverlay(deleteModal, deletePanel);
       deleteModal.classList.remove('active');
+      return Promise.resolve();
     };
 
     btnCloseDeleteModal.addEventListener('click', fecharModalExclusao);
@@ -271,11 +273,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnConfirmDelete.addEventListener('click', async () => {
       try {
         await window.alunoAuthService.excluirMinhaConta();
-        fecharModalExclusao();
+        await fecharModalExclusao();
         showToast('Sua conta foi excluída com sucesso.', 'success');
         renderAuthView();
       } catch (err) {
-        showToast('Erro ao excluir conta.', 'danger');
+        showToast(err.message || 'Erro ao excluir conta.', 'danger');
       }
     });
 
@@ -327,5 +329,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000);
   }
 
-  init();
+  await init();
 });
