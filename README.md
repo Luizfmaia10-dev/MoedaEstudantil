@@ -24,7 +24,7 @@ O sistema tem o objetivo de estimular o reconhecimento do mérito estudantil atr
 - **RF-002:** O aluno pode selecionar uma instituição participante a partir de uma lista de opções. 
 - **RF-003:** O sistema deve adicionar ao saldo corrente do professor 1000 (mil) moedas a cada semestre.
 - **RF-004:** O professor pode distribuir moedas aos alunos, indicando o motivo da transferência.
-- **RF-005:** O sistema deve notificar ao aluno que ele recebeu moeda(s) de um professor.
+- **RF-005 / Lab04S01:** O sistema deve enviar confirmação por email ao aluno e ao professor quando houver distribuição de moedas, com um template para cada perfil.
 - **RF-006:** O professor e o aluno podem consultar o extrato da sua conta.
 - **RF-007:** O aluno pode trocar moedas por uma vantagem.
 - **RF-008:** A empresa parceira pode gerenciar vantagens que deseja oferecer, bem como o custo em moedas estudantis.
@@ -165,7 +165,7 @@ Assim, o Controller não calcula saldo e o JavaScript não grava tabelas. A regr
 | Banco principal | MySQL 8+ |
 | Banco de testes | H2 em memória |
 | Segurança de senhas | BCrypt |
-| Notificações | Spring Mail / SMTP |
+| Notificações | Fila persistente, API Resend ou Spring Mail / SMTP |
 | Testes | JUnit 5, Mockito e Node Test Runner |
 
 ## 5. Camada de persistência
@@ -227,7 +227,7 @@ Consultas que não modificam dados utilizam `@Transactional(readOnly = true)`. S
 
 - O navegador mantém apenas `id`, `nome`, `email` e `perfil` da sessão atual em `sessionStorage`. Isso serve para navegação da interface e não substitui a persistência do backend.
 - O arquivo binário da foto de uma vantagem fica no diretório configurado por `app.upload-dir` (`uploads` por padrão). O banco persiste somente `fotoUrl`.
-- E-mails são enviados pelo servidor SMTP configurado; o projeto não mantém uma caixa de saída persistente.
+- E-mails são agendados na tabela `email_pendente` junto com a movimentação e enviados automaticamente pela API Resend ou SMTP após o commit. A fila guarda estado, tentativas e data do envio.
 - Quando o sistema é iniciado explicitamente com o perfil de teste e H2 em memória, os dados são temporários. Na execução descrita neste README, o MySQL é a fonte persistente.
 
 > Limitação atual: a interface usa a identidade mínima da sessão para montar rotas, mas a autorização completa de todos os endpoints por token ou sessão autenticada no servidor ainda está fora do escopo desta entrega.
@@ -300,19 +300,18 @@ Para executar a suíte de **testes automatizados (JUnit 5 + Mockito)**:
 
 ### 3.1 Configuração de e-mail
 
-Os requisitos de notificação usam SMTP. Para desenvolvimento, execute um servidor local na porta `1025` (por exemplo, MailHog/Mailpit) ou configure as variáveis abaixo para seu provedor:
+Copie `demo (2)/demo/.env.example` para `.env` na mesma pasta e configure a API Resend:
 
 ```env
-MAIL_HOST=localhost
-MAIL_PORT=1025
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_AUTH=false
-MAIL_STARTTLS=false
-MAIL_FROM=nao-responda@moeda-estudantil.local
+MAIL_PROVIDER=resend
+RESEND_API_KEY=sua_chave
+MAIL_FROM=onboarding@resend.dev
+MAIL_DELIVERY_ENABLED=true
 ```
 
-Sem um servidor SMTP disponível, a operação principal é preservada e a falha da notificação fica registrada no log da aplicação.
+Distribuir moedas agenda confirmação para professor e aluno. Resgatar uma vantagem agenda o cupom para o aluno e o aviso para a empresa, com o mesmo código. A fila persiste no banco e faz até cinco tentativas de envio sem desfazer a movimentação confirmada. A chave deve ficar apenas no `.env`, ignorado pelo Git.
+
+O remetente `onboarding@resend.dev` serve para testes; para enviar a todos os usuários, configure um remetente de domínio verificado no Resend. Veja [configuração, limitações de teste, alternativa SMTP e consulta da fila](docs/emails-automaticos.md).
 
 ### 3.2 Assistente local de transferência
 
