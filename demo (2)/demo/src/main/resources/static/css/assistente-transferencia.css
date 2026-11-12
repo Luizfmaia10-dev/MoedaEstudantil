@@ -73,6 +73,16 @@
 .star-border-button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
 .star-border-button:disabled { cursor: not-allowed; opacity: .55; }
 
+.automation-entry { border-bottom-color: rgb(184 255 106 / .28); }
+.automation-heading { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; }
+.automation-heading h2 { margin: 0; }
+.automation-status { padding: .2rem .55rem; color: #dfffc8; background: rgb(184 255 106 / .1); border: 1px solid rgb(184 255 106 / .24); border-radius: 999px; font-size: .7rem; font-weight: 800; }
+.automation-status[data-tone="active"] { color: #173300; background: #b8ff6a; border-color: #b8ff6a; }
+.automation-status[data-tone="warning"] { color: #fff4c7; background: rgb(245 189 45 / .12); border-color: rgb(245 189 45 / .34); }
+.automation-criteria-link { display: inline-flex; min-height: 44px; align-items: center; margin-top: .4rem; color: #b8ff6a; font-size: .8rem; font-weight: 750; text-underline-offset: .2rem; }
+.automation-button { min-height: 72px; }
+.automation-button[data-tone="active"] { --star-border-track: rgb(184 255 106 / .48); }
+
 .ai-dialog {
   inset: 0;
   width: min(calc(100% - 1rem), 42rem);

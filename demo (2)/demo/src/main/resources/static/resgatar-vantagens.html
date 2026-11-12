@@ -12,6 +12,11 @@
   <header class="navbar"><div class="nav-container"><a href="painel.html" class="brand-wrapper" title="Voltar ao meu painel"><div class="brand-logo-container"><img src="assets/logo.svg" alt="" class="brand-logo"></div><div class="brand-text"><span class="brand-title">Moeda<span>Estudantil</span></span><span class="brand-subtitle">Área do Aluno</span></div></a><a href="painel.html" class="back-button" aria-label="Voltar ao painel">← <span>Voltar</span></a></div></header>
   <main class="feature-shell">
     <section class="feature-hero"><div><span class="feature-kicker">Catálogo de benefícios</span><h1>Resgatar vantagens</h1><p>Use suas moedas em produtos e descontos das empresas parceiras.</p></div><div class="balance-pill"><span>Seu saldo</span><strong><span id="saldoAluno">—</span> moedas</strong></div></section>
+    <section class="catalog-toolbar" aria-label="Filtros do catálogo">
+      <label class="catalog-search" for="buscaVantagem"><span>Buscar vantagem</span><input id="buscaVantagem" type="search" placeholder="Nome, descrição ou empresa" autocomplete="off"></label>
+      <label class="catalog-check"><input id="somenteDisponiveis" type="checkbox"><span>Cabe no meu saldo</span></label>
+      <output id="contadorVantagens" class="catalog-count" aria-live="polite">0 vantagens encontradas</output>
+    </section>
     <div id="estadoCatalogo" class="feature-status">Carregando vantagens...</div>
     <ul id="gradeVantagens" class="benefit-grid" hidden></ul>
   </main>
