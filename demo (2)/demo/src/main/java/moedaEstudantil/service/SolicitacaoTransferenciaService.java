@@ -163,6 +163,17 @@ public class SolicitacaoTransferenciaService {
      */
     @Transactional
     public SolicitacaoTransferenciaDTO aprovar(Long professorId, Long solicitacaoId, String observacao) {
+        return aprovar(professorId, solicitacaoId, observacao, false, null);
+    }
+
+    @Transactional
+    public SolicitacaoTransferenciaDTO aprovarAutomaticamente(Long professorId, Long solicitacaoId,
+                                                              String observacao, double confianca) {
+        return aprovar(professorId, solicitacaoId, observacao, true, validarConfianca(confianca));
+    }
+
+    private SolicitacaoTransferenciaDTO aprovar(Long professorId, Long solicitacaoId, String observacao,
+                                                boolean automatica, Double confianca) {
         buscarProfessor(professorId);
         String obsLimpa = limparTexto(observacao, OBSERVACAO_MAXIMA, "A explicacao");
 
@@ -197,6 +208,8 @@ public class SolicitacaoTransferenciaService {
         s.setStatus(StatusSolicitacaoTransferencia.APROVADA);
         s.setObservacaoAvaliador(obsLimpa);
         s.setDataAvaliacao(agora);
+        s.setAvaliacaoAutomatica(automatica);
+        s.setConfiancaAvaliacaoAutomatica(confianca);
         return toDTO(solicitacaoRepository.save(s));
     }
 
@@ -206,6 +219,17 @@ public class SolicitacaoTransferenciaService {
      */
     @Transactional
     public SolicitacaoTransferenciaDTO recusar(Long professorId, Long solicitacaoId, String observacao) {
+        return recusar(professorId, solicitacaoId, observacao, false, null);
+    }
+
+    @Transactional
+    public SolicitacaoTransferenciaDTO recusarAutomaticamente(Long professorId, Long solicitacaoId,
+                                                              String observacao, double confianca) {
+        return recusar(professorId, solicitacaoId, observacao, true, validarConfianca(confianca));
+    }
+
+    private SolicitacaoTransferenciaDTO recusar(Long professorId, Long solicitacaoId, String observacao,
+                                                boolean automatica, Double confianca) {
         buscarProfessor(professorId);
         String obsLimpa = limparTexto(observacao, OBSERVACAO_MAXIMA, "A explicacao");
 
@@ -215,7 +239,16 @@ public class SolicitacaoTransferenciaService {
         s.setStatus(StatusSolicitacaoTransferencia.RECUSADA);
         s.setObservacaoAvaliador(obsLimpa);
         s.setDataAvaliacao(new Date());
+        s.setAvaliacaoAutomatica(automatica);
+        s.setConfiancaAvaliacaoAutomatica(confianca);
         return toDTO(solicitacaoRepository.save(s));
+    }
+
+    private double validarConfianca(double confianca) {
+        if (!Double.isFinite(confianca) || confianca < 0 || confianca > 1) {
+            throw erro("A confianca da avaliacao automatica deve estar entre zero e um.");
+        }
+        return confianca;
     }
 
     private SolicitacaoTransferencia buscarSolicitacaoPendenteDoProfessor(Long professorId, Long solicitacaoId) {
@@ -286,6 +319,8 @@ public class SolicitacaoTransferenciaService {
                 s.getDestinatario() == null ? null : s.getDestinatario().getNome(),
                 s.getDestinatario() == null ? null : s.getDestinatario().getCurso(),
                 s.getAvaliador() == null ? null : s.getAvaliador().getId(),
-                s.getAvaliador() == null ? null : s.getAvaliador().getNome());
+                s.getAvaliador() == null ? null : s.getAvaliador().getNome(),
+                s.isAvaliacaoAutomatica(),
+                s.getConfiancaAvaliacaoAutomatica());
     }
 }

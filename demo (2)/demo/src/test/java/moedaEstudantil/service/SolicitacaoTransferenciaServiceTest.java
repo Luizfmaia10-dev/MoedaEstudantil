@@ -240,6 +240,27 @@ class SolicitacaoTransferenciaServiceTest {
     }
 
     @Test
+    void aprovacaoAutomaticaRegistraOrigemEConfianca() {
+        solicitacaoPendente(25);
+
+        SolicitacaoTransferenciaDTO dto = service.aprovarAutomaticamente(
+                1L, 10L, "Critérios atendidos pela IA.", 0.91);
+
+        assertTrue(dto.avaliacaoAutomatica());
+        assertEquals(0.91, dto.confiancaAvaliacaoAutomatica());
+    }
+
+    @Test
+    void avaliacaoManualNaoEhMarcadaComoAutomatica() {
+        solicitacaoPendente(25);
+
+        SolicitacaoTransferenciaDTO dto = service.recusar(1L, 10L, "Análise manual");
+
+        assertFalse(dto.avaliacaoAutomatica());
+        assertNull(dto.confiancaAvaliacaoAutomatica());
+    }
+
+    @Test
     void naoPermiteOutroProfessorAvaliarSolicitacaoAlheia() {
         solicitacaoPendente(20);
         Professor outro = new Professor();

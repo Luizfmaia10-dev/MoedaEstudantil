@@ -30,6 +30,8 @@ public class SolicitacaoTransferencia {
     private String observacaoAvaliador;
 
     private Date dataAvaliacao;
+    private Boolean avaliacaoAutomatica = false;
+    private Double confiancaAvaliacaoAutomatica;
 
     @ManyToOne
     @JoinColumn(name = "remetente_id")
@@ -57,6 +59,10 @@ public class SolicitacaoTransferencia {
     public void setObservacaoAvaliador(String observacaoAvaliador) { this.observacaoAvaliador = observacaoAvaliador; }
     public Date getDataAvaliacao() { return dataAvaliacao; }
     public void setDataAvaliacao(Date dataAvaliacao) { this.dataAvaliacao = dataAvaliacao; }
+    public boolean isAvaliacaoAutomatica() { return Boolean.TRUE.equals(avaliacaoAutomatica); }
+    public void setAvaliacaoAutomatica(boolean avaliacaoAutomatica) { this.avaliacaoAutomatica = avaliacaoAutomatica; }
+    public Double getConfiancaAvaliacaoAutomatica() { return confiancaAvaliacaoAutomatica; }
+    public void setConfiancaAvaliacaoAutomatica(Double confianca) { this.confiancaAvaliacaoAutomatica = confianca; }
     public Aluno getRemetente() { return remetente; }
     public void setRemetente(Aluno remetente) { this.remetente = remetente; }
     public Aluno getDestinatario() { return destinatario; }

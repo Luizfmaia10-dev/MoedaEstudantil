@@ -12,6 +12,7 @@ public class Professor extends Usuario {
     private String departamento;
     @Column(length = 1000)
     private String criteriosTransferencia;
+    private Boolean automacaoTransferenciasAtiva = false;
 
     @ManyToOne
     @JoinColumn(name = "instituicao_id")
@@ -25,6 +26,8 @@ public class Professor extends Usuario {
     public void setDepartamento(String departamento) { this.departamento = departamento; }
     public String getCriteriosTransferencia() { return criteriosTransferencia; }
     public void setCriteriosTransferencia(String criteriosTransferencia) { this.criteriosTransferencia = criteriosTransferencia; }
+    public boolean isAutomacaoTransferenciasAtiva() { return Boolean.TRUE.equals(automacaoTransferenciasAtiva); }
+    public void setAutomacaoTransferenciasAtiva(boolean ativa) { this.automacaoTransferenciasAtiva = ativa; }
     public Instituicao getInstituicao() { return instituicao; }
     public void setInstituicao(Instituicao instituicao) { this.instituicao = instituicao; }
 }

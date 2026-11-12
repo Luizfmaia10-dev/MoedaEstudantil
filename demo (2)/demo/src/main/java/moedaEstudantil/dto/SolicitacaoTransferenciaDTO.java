@@ -17,5 +17,7 @@ public record SolicitacaoTransferenciaDTO(
         String destinatarioNome,
         String destinatarioCurso,
         Long avaliadorId,
-        String avaliadorNome) {
+        String avaliadorNome,
+        Boolean avaliacaoAutomatica,
+        Double confiancaAvaliacaoAutomatica) {
 }
