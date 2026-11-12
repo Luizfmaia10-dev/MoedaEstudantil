@@ -114,7 +114,7 @@ body {
 }
 
 .brand-title span {
-  color: var(--primary-yellow);
+  color: var(--primary-deep);
 }
 
 .brand-subtitle {
@@ -687,6 +687,11 @@ body {
 .feature-status { padding: 1rem; border-radius: var(--radius-md); text-align: center; color: var(--text-muted); }
 .feature-status.error { background: var(--color-danger-bg); color: #b91c1c; }
 .catalog-toolbar { display: grid; gap: .85rem; margin-bottom: 1rem; padding: 1rem; background: var(--bg-white); border: 1px solid var(--border-yellow); border-radius: var(--radius-lg); }
+.catalog-page .feature-hero { box-shadow: none; }
+.catalog-page .feature-kicker { font-size: .9rem; letter-spacing: 0; text-transform: none; }
+.catalog-page .btn-primary { background: var(--primary-yellow); box-shadow: none; }
+.catalog-page .btn-primary:hover { background: var(--primary-light); box-shadow: none; }
+.catalog-page .back-button, .catalog-page .back-button:hover { box-shadow: none; }
 .catalog-search { display: grid; gap: .35rem; color: var(--text-main); font-size: .84rem; font-weight: 700; }
 .catalog-search input { width: 100%; min-height: 44px; padding: .65rem .8rem; color: var(--text-main); background: #fff; border: 1px solid var(--border-yellow); border-radius: var(--radius-md); font: inherit; }
 .catalog-search input:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary-yellow) 38%, transparent); outline-offset: 2px; }

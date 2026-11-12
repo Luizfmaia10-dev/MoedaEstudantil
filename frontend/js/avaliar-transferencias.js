@@ -35,7 +35,7 @@ function automaticDecisionBadge(solicitacao) {
 
 function mostrarErroGeral(err) {
   $('loading').style.display = 'none';
-  $('conteudo').style.display = 'none';
+  $('conteudo').style.display = 'block';
   const el = $('erroGeral');
   el.textContent = err instanceof TypeError ? 'Backend indisponível. Inicie o servidor Spring Boot (porta 8080).' : (typeof err === 'string' ? err : err.message);
   el.style.display = 'block';
