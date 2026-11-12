@@ -1,4 +1,7 @@
 .worktrees/
 tmp/
+.env
+.env.*
+!.env.example
 output/pdf/*_atualizado.pdf
 output/pdf/*_corrigido.pdf
