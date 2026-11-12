@@ -11,7 +11,7 @@
       { title: 'Distribuição de Moedas', description: 'Envie moedas aos alunos com um motivo.', eyebrow: 'PROFESSOR', href: id => `distribuir-moedas.html?professorId=${id}` },
       { title: 'Consulta de Extrato', description: 'Consulte seu saldo e histórico de envios.', eyebrow: 'PROFESSOR', href: id => `extrato.html?usuarioId=${id}` },
       { title: 'Critérios de Transferência', description: 'Cadastre critérios para transferências entre alunos.', eyebrow: 'PROFESSOR', href: id => `criterios-professor.html?professorId=${id}` },
-      { title: 'Gestão de Transferências', description: 'Avalie solicitações de transferência.', eyebrow: 'PROFESSOR', href: id => `avaliar-transferencias.html?professorId=${id}` }
+      { title: 'Transferências e Automação', description: 'Avalie solicitações ou deixe a IA decidir conforme seus critérios.', eyebrow: 'PROFESSOR', href: id => `avaliar-transferencias.html?professorId=${id}` }
     ],
     EMPRESA: [
       { title: 'Gestão de Vantagens', description: 'Cadastre e gerencie as vantagens oferecidas.', eyebrow: 'EMPRESA', href: id => `vantagens.html?empresaId=${id}` },

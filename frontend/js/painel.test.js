@@ -9,6 +9,8 @@ test('painel deriva saudação e ações somente da sessão autenticada', () => 
   assert.equal(model.profileLabel, 'Professor');
   assert.equal(model.cards.length, 4);
   assert.equal(model.cards[0].href, 'distribuir-moedas.html?professorId=1');
+  assert.equal(model.cards[3].title, 'Transferências e Automação');
+  assert.match(model.cards[3].description, /IA/);
   assert.ok(model.cards.every(card => !card.href.includes('alunoId')));
 });
 
