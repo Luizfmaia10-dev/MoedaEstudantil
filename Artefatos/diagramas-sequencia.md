@@ -1,6 +1,6 @@
 # Diagramas de Sequência — Sistema de Moeda Estudantil
 
-Este documento reúne os **13 diagramas de sequência** dos casos de uso (incluindo os relacionamentos `<<include>>`) do Sistema de Moeda Estudantil, seguindo a arquitetura MVC em camadas do projeto (`View/Frontend` → `Controller` → `Service` → `Repository` → `Banco de Dados / SMTP`).
+Este documento reúne os **13 diagramas de sequência** dos casos de uso (incluindo os relacionamentos `<<include>>`) do Sistema de Moeda Estudantil, seguindo a arquitetura MVC em camadas do projeto (`View/Frontend` → `Controller` → `Service` → `Repository` → `Banco de Dados`). Emails passam por uma fila persistente e são entregues por Resend ou SMTP após o commit.
 
 ---
 
@@ -71,7 +71,7 @@ sequenceDiagram
     participant VR as VantagemRepository
     participant CR as ContaRepository
     participant TR as TransacaoRepository
-    participant EM as EmailService
+    participant EM as NotificacaoService
 
     A->>V: Consulta catálogo de vantagens ativas
     V->>C: GET /api/vantagens
@@ -94,8 +94,8 @@ sequenceDiagram
         S->>CR: save(contaAluno)
         S->>TR: save(ResgateVantagem [tipo = SAIDA, codigoCupom])
         Note over S,EM: <<include>> Enviar e-mail às partes
-        S->>EM: enviarEmailsResgate(aluno, empresa, vantagem, codigoCupom)
-        EM-->>S: E-mails enviados
+        S->>EM: notificarResgate(aluno, vantagem, codigoCupom)
+        EM-->>S: Dois emails agendados na mesma transação
         S-->>C: ResgateDTO (codigoCupom, vantagem, saldoRestante)
         C-->>V: 201 Created (ResgateDTO)
         V-->>A: Exibe cupom gerado e novo saldo
@@ -113,24 +113,31 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     autonumber
-    participant RS as ResgateService
-    participant ES as EmailService
-    participant SMTP as ServidorSMTP
+    participant RS as ResgateVantagemService
+    participant ES as NotificacaoService
+    participant DB as EmailPendenteRepository / MySQL
+    participant W as EmailOutboxScheduler / Processor
+    participant API as EmailSender (Resend ou SMTP)
     actor A as Caixa de E-mail (Aluno)
     actor E as Caixa de E-mail (Empresa Parceira)
 
     Note over RS,ES: Incluído ao confirmar o resgate de uma vantagem (RF-009 e RF-010)
-    RS->>ES: enviarEmailsResgate(aluno, empresa, vantagem, codigoCupom)
-
-    ES->>ES: Monta e-mail do Aluno (cupom, descrição da vantagem e nome da empresa)
-    ES->>SMTP: sendMail(destinatario = aluno.email, assunto = "Cupom de Resgate", corpo)
-    SMTP-->>A: Entrega e-mail com o código do cupom para utilização
-
-    ES->>ES: Monta e-mail da Empresa Parceira (código da transação/cupom, aluno e vantagem)
-    ES->>SMTP: sendMail(destinatario = empresa.email, assunto = "Conferência de Troca", corpo)
-    SMTP-->>E: Entrega e-mail com código para conferência presencial
-
-    ES-->>RS: Confirmação de disparo às duas partes
+    RS->>ES: notificarResgate(aluno, vantagem, codigoCupom)
+    ES->>ES: Monta templates com o mesmo código do cupom
+    ES->>DB: saveAll(emailAluno, emailEmpresa)
+    ES-->>RS: Agendamento concluído
+    Note over RS,DB: Commit confirma resgate e emails juntos; rollback descarta ambos
+    loop Uma mensagem elegível por rodada após commit
+        W->>DB: buscarProntos(PENDENTE, agora, limite 1) com bloqueio
+        W->>API: enviar(mensagem, chaveIdempotencia)
+        alt Provedor aceitou
+            W->>DB: ENVIADO e data do aceite
+            API-->>A: Cupom do aluno (quando destinatário)
+            API-->>E: Código de conferência (quando destinatário)
+        else Falha
+            W->>DB: Reagendar com atraso ou FALHOU após 5 tentativas
+        end
+    end
 ```
 
 ---
@@ -242,7 +249,7 @@ sequenceDiagram
     participant S as EnvioService
     participant CR as ContaRepository
     participant TR as TransacaoRepository
-    participant EM as EmailService
+    participant EM as NotificacaoService
 
     P->>V: Seleciona aluno da instituição e informa quantidade de moedas
     Note over P,S: <<include>> Informar motivo
@@ -260,9 +267,9 @@ sequenceDiagram
         S->>CR: save(contaProfessor) e save(contaAluno)
         S->>TR: save(Envio [SAIDA na conta do Professor, motivo])
         S->>TR: save(Envio [ENTRADA na conta do Aluno, motivo])
-        Note over S,EM: <<include>> Notificar aluno por e-mail
-        S->>EM: notificarRecebimentoMoedas(aluno, professor, quantidade, motivo)
-        EM-->>S: E-mail enviado ao aluno
+        Note over S,EM: <<include>> Confirmar envio ao professor e recebimento ao aluno
+        S->>EM: notificarRecebimento(aluno, professor, quantidade, motivo)
+        EM-->>S: Dois emails agendados na mesma transação
         S-->>C: EnvioDTO
         C-->>V: 201 Created (EnvioDTO)
         V-->>P: Exibe confirmação e atualiza saldo do professor
@@ -306,23 +313,36 @@ sequenceDiagram
 
 ---
 
-## 9. Notificar aluno por e-mail (`<<include>>` de Distribuir moedas)
+## 9. Confirmar envio e recebimento por email (`<<include>>` de Distribuir moedas)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant ES as EnvioService
-    participant EM as EmailService
-    participant SMTP as ServidorSMTP
+    participant ES as DistribuicaoMoedasService
+    participant EM as NotificacaoService
+    participant DB as EmailPendenteRepository / MySQL
+    participant W as EmailOutboxScheduler / Processor
+    participant API as EmailSender (Resend ou SMTP)
     actor A as Caixa de E-mail (Aluno)
+    actor P as Caixa de E-mail (Professor)
 
-    Note over ES,EM: Executado após registrar o envio de moedas pelo professor (RF-005)
-    ES->>EM: notificarRecebimentoMoedas(aluno, professor, quantidade, motivo)
-    EM->>EM: Monta mensagem com nome do professor, quantidade de moedas e motivo
-    EM->>SMTP: sendMail(destinatario = aluno.email, assunto = "Você recebeu moedas!", corpo)
-    SMTP-->>A: Entrega notificação na caixa de entrada do aluno
-    SMTP-->>EM: 250 OK (E-mail aceito para entrega)
-    EM-->>ES: Notificação concluída
+    Note over ES,EM: RF-005 e Lab04S01: um template por perfil
+    ES->>EM: notificarRecebimento(aluno, professor, quantidade, motivo)
+    EM->>EM: Monta templates com participantes, quantidade e motivo
+    EM->>DB: saveAll(emailAluno, emailProfessor)
+    EM-->>ES: Agendamento concluído
+    Note over ES,DB: Commit confirma saldos e emails juntos; rollback descarta ambos
+    loop Uma mensagem elegível por rodada após commit
+        W->>DB: buscarProntos(PENDENTE, agora, limite 1) com bloqueio
+        W->>API: enviar(mensagem, chaveIdempotencia)
+        alt Provedor aceitou
+            API-->>A: Confirmação de recebimento (quando destinatário)
+            API-->>P: Confirmação de envio (quando destinatário)
+            W->>DB: ENVIADO e data do aceite
+        else Falha
+            W->>DB: Reagendar com atraso ou FALHOU após 5 tentativas
+        end
+    end
 ```
 
 ---

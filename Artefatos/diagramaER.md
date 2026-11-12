@@ -1,5 +1,18 @@
 ```mermaid
 erDiagram
+    EMAIL_PENDENTE {
+        string id PK "UUID e chave de idempotencia"
+        string destinatario
+        string assunto
+        string texto
+        string status "PENDENTE, ENVIADO, FALHOU"
+        int tentativas
+        datetime criado_em
+        datetime proxima_tentativa
+        datetime enviado_em
+        string ultimo_erro "Categoria sem dados sensiveis"
+    }
+
     INSTITUICAO {
         int id PK
         string nome
