@@ -3,6 +3,8 @@ package moedaEstudantil.controller;
 import moedaEstudantil.dto.ColegaDTO;
 import moedaEstudantil.dto.SaldoDisponivelDTO;
 import moedaEstudantil.dto.SolicitacaoTransferenciaDTO;
+import moedaEstudantil.dto.AutomacaoTransferenciaDTO;
+import moedaEstudantil.service.AutomacaoTransferenciaService;
 import moedaEstudantil.service.SolicitacaoTransferenciaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,16 @@ public class SolicitacaoTransferenciaController {
     public record AvaliacaoRequest(String observacao) {
     }
 
-    private final SolicitacaoTransferenciaService service;
+    public record ConfigurarAutomacaoRequest(Boolean ativa) {
+    }
 
-    public SolicitacaoTransferenciaController(SolicitacaoTransferenciaService service) {
+    private final SolicitacaoTransferenciaService service;
+    private final AutomacaoTransferenciaService automacao;
+
+    public SolicitacaoTransferenciaController(SolicitacaoTransferenciaService service,
+                                              AutomacaoTransferenciaService automacao) {
         this.service = service;
+        this.automacao = automacao;
     }
 
     /* ---------- Endpoints do Aluno (RF-012) ---------- */
@@ -73,6 +81,22 @@ public class SolicitacaoTransferenciaController {
             @PathVariable Long professorId,
             @RequestParam(required = false) String status) {
         return service.listarParaProfessor(professorId, status);
+    }
+
+    @GetMapping("/professores/{professorId}/transferencias/automacao")
+    public AutomacaoTransferenciaDTO consultarAutomacao(@PathVariable Long professorId) {
+        return automacao.consultar(professorId);
+    }
+
+    @PutMapping("/professores/{professorId}/transferencias/automacao")
+    public AutomacaoTransferenciaDTO configurarAutomacao(
+            @PathVariable Long professorId,
+            @RequestBody ConfigurarAutomacaoRequest body) {
+        if (body == null || body.ativa() == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Informe se a automacao deve ficar ativa.");
+        }
+        return automacao.configurar(professorId, body.ativa());
     }
 
     @PostMapping("/professores/{professorId}/transferencias/{solicitacaoId}/aprovar")
