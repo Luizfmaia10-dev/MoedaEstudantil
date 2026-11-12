@@ -242,12 +242,22 @@ class SolicitacaoTransferenciaServiceTest {
     @Test
     void aprovacaoAutomaticaRegistraOrigemEConfianca() {
         solicitacaoPendente(25);
+        avaliador.setAutomacaoTransferenciasAtiva(true);
 
         SolicitacaoTransferenciaDTO dto = service.aprovarAutomaticamente(
                 1L, 10L, "Critérios atendidos pela IA.", 0.91);
 
         assertTrue(dto.avaliacaoAutomatica());
         assertEquals(0.91, dto.confiancaAvaliacaoAutomatica());
+    }
+
+    @Test
+    void avaliacaoAutomaticaExigeAutomacaoAindaAtiva() {
+        solicitacaoPendente(25);
+
+        assertEquals(409, assertThrows(ResponseStatusException.class,
+                () -> service.aprovarAutomaticamente(1L, 10L, "Análise atrasada", 0.91))
+                .getStatusCode().value());
     }
 
     @Test

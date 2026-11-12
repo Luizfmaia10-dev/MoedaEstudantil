@@ -169,6 +169,7 @@ public class SolicitacaoTransferenciaService {
     @Transactional
     public SolicitacaoTransferenciaDTO aprovarAutomaticamente(Long professorId, Long solicitacaoId,
                                                               String observacao, double confianca) {
+        validarAutomacaoAtiva(professorId);
         return aprovar(professorId, solicitacaoId, observacao, true, validarConfianca(confianca));
     }
 
@@ -225,6 +226,7 @@ public class SolicitacaoTransferenciaService {
     @Transactional
     public SolicitacaoTransferenciaDTO recusarAutomaticamente(Long professorId, Long solicitacaoId,
                                                               String observacao, double confianca) {
+        validarAutomacaoAtiva(professorId);
         return recusar(professorId, solicitacaoId, observacao, true, validarConfianca(confianca));
     }
 
@@ -249,6 +251,13 @@ public class SolicitacaoTransferenciaService {
             throw erro("A confianca da avaliacao automatica deve estar entre zero e um.");
         }
         return confianca;
+    }
+
+    private void validarAutomacaoAtiva(Long professorId) {
+        if (!buscarProfessor(professorId).isAutomacaoTransferenciasAtiva()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "A automacao de transferencias nao esta ativa.");
+        }
     }
 
     private SolicitacaoTransferencia buscarSolicitacaoPendenteDoProfessor(Long professorId, Long solicitacaoId) {

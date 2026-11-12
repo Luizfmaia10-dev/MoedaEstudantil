@@ -19,6 +19,11 @@ public interface SolicitacaoTransferenciaRepository extends JpaRepository<Solici
 
     List<SolicitacaoTransferencia> findByAvaliadorIdOrderByDataSolicitacaoDescIdDesc(Long avaliadorId);
 
+    List<SolicitacaoTransferencia> findByAvaliadorIdAndStatusOrderByDataSolicitacaoAscIdAsc(
+            Long avaliadorId, StatusSolicitacaoTransferencia status);
+
+    long countByAvaliadorIdAndStatus(Long avaliadorId, StatusSolicitacaoTransferencia status);
+
     /** Soma das moedas ja comprometidas em solicitacoes do remetente com o status informado. */
     @Query("select coalesce(sum(s.quantidade), 0) from SolicitacaoTransferencia s "
             + "where s.remetente.id = :remetenteId and s.status = :status")
