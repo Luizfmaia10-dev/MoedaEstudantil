@@ -18,6 +18,7 @@ import moedaEstudantil.repository.TransacaoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -34,6 +35,7 @@ class SolicitacaoTransferenciaServiceTest {
     private ProfessorRepository professorRepository;
     private ContaRepository contaRepository;
     private TransacaoRepository transacaoRepository;
+    private ApplicationEventPublisher eventPublisher;
     private SolicitacaoTransferenciaService service;
 
     private Instituicao puc;
@@ -51,8 +53,10 @@ class SolicitacaoTransferenciaServiceTest {
         professorRepository = mock(ProfessorRepository.class);
         contaRepository = mock(ContaRepository.class);
         transacaoRepository = mock(TransacaoRepository.class);
+        eventPublisher = mock(ApplicationEventPublisher.class);
         service = new SolicitacaoTransferenciaService(
-                solicitacaoRepository, alunoRepository, professorRepository, contaRepository, transacaoRepository);
+                solicitacaoRepository, alunoRepository, professorRepository, contaRepository,
+                transacaoRepository, eventPublisher);
 
         puc = new Instituicao();
         puc.setId(1L);
@@ -129,6 +133,7 @@ class SolicitacaoTransferenciaServiceTest {
         assertEquals(6L, dto.destinatarioId());
         assertEquals(1L, dto.avaliadorId());
         verify(contaRepository).findByUsuarioIdParaAtualizacao(4L);
+        verify(eventPublisher).publishEvent(new SolicitacaoTransferenciaCriadaEvent(10L));
     }
 
     @Test

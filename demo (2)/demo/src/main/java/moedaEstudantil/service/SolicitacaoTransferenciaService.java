@@ -16,6 +16,7 @@ import moedaEstudantil.repository.ProfessorRepository;
 import moedaEstudantil.repository.SolicitacaoTransferenciaRepository;
 import moedaEstudantil.repository.TransacaoRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,17 +42,20 @@ public class SolicitacaoTransferenciaService {
     private final ProfessorRepository professorRepository;
     private final ContaRepository contaRepository;
     private final TransacaoRepository transacaoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SolicitacaoTransferenciaService(SolicitacaoTransferenciaRepository solicitacaoRepository,
                                            AlunoRepository alunoRepository,
                                            ProfessorRepository professorRepository,
                                            ContaRepository contaRepository,
-                                           TransacaoRepository transacaoRepository) {
+                                           TransacaoRepository transacaoRepository,
+                                           ApplicationEventPublisher eventPublisher) {
         this.solicitacaoRepository = solicitacaoRepository;
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.contaRepository = contaRepository;
         this.transacaoRepository = transacaoRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional(readOnly = true)
@@ -138,7 +142,9 @@ public class SolicitacaoTransferenciaService {
         s.setJustificativa(texto);
         s.setStatus(StatusSolicitacaoTransferencia.PENDENTE);
         s.setDataSolicitacao(new Date());
-        return toDTO(solicitacaoRepository.save(s));
+        SolicitacaoTransferencia salva = solicitacaoRepository.save(s);
+        eventPublisher.publishEvent(new SolicitacaoTransferenciaCriadaEvent(salva.getId()));
+        return toDTO(salva);
     }
 
     /** Cancela uma solicitacao pendente do proprio aluno; libera o saldo comprometido. */
