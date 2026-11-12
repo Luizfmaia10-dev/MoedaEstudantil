@@ -327,6 +327,14 @@ OLLAMA_TIMEOUT=8s
 
 A interpretação não movimenta moedas nem grava conversa. Somente após o aluno revisar e confirmar, o sistema chama o fluxo normal e persiste uma `solicitacao_transferencia` pendente para avaliação do professor.
 
+### 3.3 Automação de solicitações do professor
+
+Na opção **Transferências e Automação**, cada professor pode ativar ou desativar a análise automática por IA. Antes de ativar, é necessário cadastrar os próprios critérios de transferência. Ao ativar, o sistema analisa as solicitações pendentes existentes e também as novas solicitações direcionadas ao professor.
+
+A automação só aprova ou recusa quando o Ollama devolve uma decisão válida com confiança mínima de **80%**. Respostas incertas, confiança inferior ao limite, timeout ou Ollama indisponível mantêm a solicitação pendente para avaliação manual. A origem automática e a confiança ficam registradas e aparecem na interface; a análise da IA não mantém bloqueios de saldo durante a chamada ao modelo.
+
+O professor continua podendo aprovar ou recusar manualmente qualquer solicitação pendente. Para usar a automação, mantenha o Ollama, o modelo definido por `OLLAMA_MODEL` e o backend em execução.
+
 ### 4. Acessando o Frontend
 Com o backend em execução, você pode acessar a interface diretamente pelo navegador (servida pelo próprio Spring Boot) ou abrir a pasta `frontend/` com uma extensão como o *Live Server*:
 
