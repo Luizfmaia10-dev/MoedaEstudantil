@@ -58,6 +58,18 @@
         return request(`${professorUrl(professorId)}${query}`);
       },
 
+      consultarAutomacao(professorId) {
+        return request(`${professorUrl(professorId)}/automacao`);
+      },
+
+      configurarAutomacao(professorId, ativa) {
+        return request(`${professorUrl(professorId)}/automacao`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ativa })
+        });
+      },
+
       aprovar(professorId, solicitacaoId, observacao) {
         return request(`${professorUrl(professorId)}/${encodeURIComponent(solicitacaoId)}/aprovar`, {
           method: 'POST',

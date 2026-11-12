@@ -36,3 +36,29 @@ test('solicitação persistente mantém o contrato existente', async () => {
   assert.equal(captured.options.method, 'POST');
   assert.equal(captured.options.body, JSON.stringify(payload));
 });
+
+test('consulta e atualiza a automação do professor', async () => {
+  const chamadas = [];
+  const service = createTransferenciaService(async (url, options) => {
+    chamadas.push({ url, options });
+    return { ativa: true, possuiCriterios: true };
+  });
+
+  await service.consultarAutomacao(7);
+  await service.configurarAutomacao(7, true);
+
+  assert.deepEqual(chamadas, [
+    {
+      url: 'http://localhost:8080/api/professores/7/transferencias/automacao',
+      options: undefined
+    },
+    {
+      url: 'http://localhost:8080/api/professores/7/transferencias/automacao',
+      options: {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ativa: true })
+      }
+    }
+  ]);
+});
