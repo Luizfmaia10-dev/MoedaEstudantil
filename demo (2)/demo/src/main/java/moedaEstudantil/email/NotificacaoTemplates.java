@@ -10,11 +10,11 @@ import java.util.List;
 public class NotificacaoTemplates {
     public List<EmailMensagem> distribuicao(Aluno aluno, Professor professor, int quantidade, String motivo) {
         return List.of(
-                new EmailMensagem(aluno.getEmail(), "Voc? recebeu moedas estudantis",
-                        "Ol?, " + aluno.getNome() + "!\n\nVoc? recebeu " + quantidade
+                new EmailMensagem(aluno.getEmail(), "Você recebeu moedas estudantis",
+                        "Olá, " + aluno.getNome() + "!\n\nVocê recebeu " + quantidade
                                 + " moedas do professor " + professor.getNome() + ".\nMotivo: " + motivo),
-                new EmailMensagem(professor.getEmail(), "Confirma??o do envio de moedas estudantis",
-                        "Ol?, professor(a) " + professor.getNome() + "!\n\nSeu envio de " + quantidade
+                new EmailMensagem(professor.getEmail(), "Confirmação do envio de moedas estudantis",
+                        "Olá, professor(a) " + professor.getNome() + "!\n\nSeu envio de " + quantidade
                                 + " moedas para " + aluno.getNome() + " foi confirmado.\nMotivo: " + motivo));
     }
 
@@ -22,16 +22,16 @@ public class NotificacaoTemplates {
         var empresa = vantagem.getEmpresa();
         return List.of(
                 new EmailMensagem(aluno.getEmail(), "Cupom da vantagem resgatada",
-                        "Ol?, " + aluno.getNome() + "!\n\nSeu resgate de " + vantagem.getNome()
+                        "Olá, " + aluno.getNome() + "!\n\nSeu resgate de " + vantagem.getNome()
                                 + " foi confirmado na empresa " + empresa.getNome()
                                 + ".\nCusto: " + vantagem.getCustoMoedas() + " moedas."
-                                + "\nC?digo para a troca presencial: " + codigo
-                                + "\nApresente este cupom ? empresa para confer?ncia."),
+                                + "\nCódigo para a troca presencial: " + codigo
+                                + "\nApresente este cupom à empresa para conferência."),
                 new EmailMensagem(empresa.getEmail(), "Novo resgate de vantagem",
-                        "Ol?, " + empresa.getNome() + "!\n\nA vantagem " + vantagem.getNome()
+                        "Olá, " + empresa.getNome() + "!\n\nA vantagem " + vantagem.getNome()
                                 + " foi resgatada por " + aluno.getNome()
                                 + ".\nCusto: " + vantagem.getCustoMoedas() + " moedas."
-                                + "\nC?digo para confer?ncia: " + codigo
-                                + "\nConfira este c?digo com o cupom apresentado pelo aluno na troca presencial."));
+                                + "\nCódigo para conferência: " + codigo
+                                + "\nConfira este código com o cupom apresentado pelo aluno na troca presencial."));
     }
 }
