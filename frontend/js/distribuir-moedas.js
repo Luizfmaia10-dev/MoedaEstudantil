@@ -25,7 +25,7 @@ function abrirConfirmacao(gatilho) {
 
 function abrirSucesso(resultado) {
   $d('modalTitulo').textContent = 'Moedas enviadas';
-  $d('modalCorpo').innerHTML = `A transferência foi concluída e o aluno foi notificado por e-mail.<br><br>Seu novo saldo é <strong>${resultado.saldoProfessor} moedas</strong>.`;
+  $d('modalCorpo').innerHTML = `A transferência foi concluída e os e-mails do professor e do aluno foram agendados.<br><br>Seu novo saldo é <strong>${resultado.saldoProfessor} moedas</strong>.`;
   $d('modalCancelar').hidden = true; $d('modalConfirmar').hidden = false; $d('modalConfirmar').textContent = 'Concluir';
   window.modalGsap.abrir($d('modal'), $d('modalPainel'));
 }
