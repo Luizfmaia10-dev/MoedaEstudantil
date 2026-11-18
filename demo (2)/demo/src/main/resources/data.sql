@@ -5,7 +5,7 @@ INSERT IGNORE INTO instituicao (id, nome) VALUES (2, 'Universidade Federal de Mi
 -- 2. Carga de Usuarios (Base para os Professores)
 -- Nota: Em um ambiente real, as senhas estariam criptografadas (BCrypt).
 INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
-VALUES (1, 'glender.bras@pucminas.br', 'senha123', 'PROFESSOR');
+VALUES (1, 'luiznxmaia@gmail.com', 'senha123', 'PROFESSOR');
 
 INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
 VALUES (2, 'helena.souza@pucminas.br', 'senha123', 'PROFESSOR');
@@ -40,7 +40,7 @@ VALUES
 -- 5. Carga de exemplo para testar o extrato (RF-006)
 -- Aluno de teste: usuario_id 4 / conta 4. Professor Glender: usuario_id 1 / conta 1.
 INSERT IGNORE INTO usuario (id, email, senha, tipo_usuario)
-VALUES (4, 'aluno.teste@sga.pucminas.br', 'senha123', 'ALUNO');
+VALUES (4, 'lf.cunhamaia@gmail.com', 'senha123', 'ALUNO');
 
 INSERT IGNORE INTO aluno (usuario_id, nome, cpf, rg, endereco, curso, instituicao_id)
 VALUES (4, 'Aluno Teste', '444.444.444-44', 'MG-00.000.000', 'Rua Teste, 100', 'Engenharia de Software', 1);

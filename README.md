@@ -347,8 +347,8 @@ Contas de demonstração persistidas:
 
 | Perfil | E-mail | Senha |
 | --- | --- | --- |
-| Aluno | `aluno.teste@sga.pucminas.br` | `senha123` |
-| Professor | `glender.bras@pucminas.br` | `senha123` |
+| Aluno | `lf.cunhamaia@gmail.com` | `senha123` |
+| Professor | `luiznxmaia@gmail.com` | `senha123` |
 | Empresa | `contato@cantinadapuc.com.br` | `senha123` |
 
 O primeiro login válido migra automaticamente senhas legadas em texto simples para BCrypt.
